@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">MutiChannel-Alarm</string>
+    <string name="menuHead">Menu</string>
+    <string name="menuList_setting">Settings</string>
+    <string name="menuList_about">About</string>
+    <string name="menuList_activate">Activate</string>
+    <string name="title_mainPage">"  Alarm"</string>
+    <string name="title_aboutPage">"  About"</string>
+    <string name="page1_addLogo">Add a alarm.</string>
+    <string name="bar_alarm">Alarm</string>
+    <string name="bar_channel">Channel</string>
+    <string name="page2_modeTitle_pm">Priority Mode</string>
+    <string name="page2_modeTitle_head">Headphones-only Output</string>
+    <string name="page2_modeTitle_sys">System-selected</string>
+    <string name="page2_modeTitle_current">Current: %1$s</string>
+    <string name="page2_modeDescribe_pm">When headphones are connected, the ringtone will only be played through the headphones. \nIf the headphones are disconnected, it will be played through the speaker.</string>
+    <string name="page2_modeDescribe_head">The ringtone is played exclusively through the headphones. If the headphones are disconnected, no ringtone will be played.</string>
+    <string name="page2_modeDescribe_sys">The way to play the ringtone is decided by your phone system.In most cases,it means speaker-only output.</string>
+    <string name="pageAbout_by">by wxp (xksyu2021)</string>
+    <string name="backHead">Back</string>
+</resources>
