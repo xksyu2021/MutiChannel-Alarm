@@ -1,5 +1,6 @@
 package com.example.mutichannel_alarm
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,6 +33,8 @@ import androidx.compose.foundation.verticalScroll
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.runtime.mutableIntStateOf
 
 //UI data
 class SettingsManager(private val context: Context?) {
@@ -93,7 +96,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun mainPage(settingsManager :SettingsManager,context :Context? = null) {
-    var showPage by remember { mutableStateOf(1) } //1 for debug. set it as 0 in release.
+    var showPage by remember { mutableIntStateOf(0) } //1 for debug. set it as 0 in release.
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -113,7 +116,11 @@ fun mainPage(settingsManager :SettingsManager,context :Context? = null) {
         floatingActionButton = {
             if(showPage == 0){
                 FloatingActionButton(
-                    onClick = { },
+                    onClick = {
+                        val intent = Intent(context, AddActivity::class.java)
+                        intent.putExtra("IS_EDIT", false)
+                        context?.startActivity(intent)
+                    },
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier
@@ -125,7 +132,7 @@ fun mainPage(settingsManager :SettingsManager,context :Context? = null) {
         },
         floatingActionButtonPosition = FabPosition.End,
         bottomBar = {
-            NavigationBar() {
+            NavigationBar {
                 NavigationBarItem(
                     onClick = {
                         showPage = 0
@@ -209,9 +216,21 @@ fun topMenu(context: Context? = null)
 
 //pages
 //alarmPage
+@SuppressLint("ComposableNaming")
 @Composable
 fun alarmPage(){
-    Text("page1")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(6.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            stringResource(R.string.page1_empty),
+            style = MaterialTheme.typography.headlineLarge,
+        )
+    }
 }
 
 //channelPage
@@ -225,7 +244,7 @@ fun channelPage(settingsManager : SettingsManager){
             .padding(32.dp)
     )
     {
-        var currentMode by remember { mutableStateOf(settingsManager.getChanMode()) }
+        var currentMode by remember { mutableIntStateOf(settingsManager.getChanMode()) }
         var vibrationEnabled by remember { mutableStateOf(settingsManager.getChanVib()) }
 
         //current
@@ -354,9 +373,8 @@ fun channelPage(settingsManager : SettingsManager){
 fun updateChannelColor(self:Int,select:Int) : CardColors {
     if(self==select) {
         return CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer)
-    }else{
-        return CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer)
     }
+    return CardDefaults.cardColors(MaterialTheme.colorScheme.secondaryContainer)
 }
 fun updateChannelSelect(select:Int){
 

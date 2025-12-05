@@ -4,17 +4,20 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.startActivity
 import com.example.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 
 
@@ -38,7 +42,7 @@ class AboutActivity : ComponentActivity() {
         val version = packageManager.getPackageInfo(packageName, 0).versionName
         setContent {
             ContrastAwareReplyTheme{
-                AboutPage(onBack = { finish() },version = version)
+                AboutPage(onBack = { finish() },version = version, context = this)
             }
         }
     }
@@ -46,7 +50,7 @@ class AboutActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutPage(onBack: () -> Unit = {},version : String? = "null"){
+fun AboutPage(onBack: () -> Unit = {},version : String? = "null",context: Context? = null){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -93,11 +97,39 @@ fun AboutPage(onBack: () -> Unit = {},version : String? = "null"){
                 "v $version",
                 style = MaterialTheme.typography.bodyMedium,
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(){
+                OutlinedButton(
+                    onClick = {
+                        openUrl(context = context,url = "https://github.com/xksyu2021/MutiChannel-Alarm")
+                    }
+                ) {
+                    Text(stringResource(R.string.pageAbout_link_code))
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        openUrl(context = context,url = "https://github.com/xksyu2021/MutiChannel-Alarm/release")
+                    }
+                ) {
+                    Text(stringResource(R.string.pageAbout_link_update))
+                }
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
+fun openUrl(context: Context? = null, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        addCategory(Intent.CATEGORY_BROWSABLE)
+        data = Uri.parse(url)
+    }
+    context?.startActivity(intent)
+}
+
+@Preview(showBackground = true,
+    device = "spec:width=1264px,height=2780px,dpi=480,cutout=punch_hole"
+)
 @Composable
 fun AboutPreview(){
     ContrastAwareReplyTheme{

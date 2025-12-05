@@ -18,4 +18,15 @@
     <string name="page2_modeDescribe_sys">The way to play the ringtone is decided by your phone system.In most cases,it means speaker-only output.</string>
     <string name="pageAbout_by">by wxp (xksyu2021)</string>
     <string name="backHead">Back</string>
+    <string name="pageAbout_link_code">Code</string>
+    <string name="pageAbout_link_update">Update</string>
+    <string name="page1_empty">No alarms</string>
+    <string name="title_add">Add</string>
+    <string name="confirmHead">Confirm</string>
+    <string name="title_edit">Edit</string>
+    <string name="pageAdd_check_edit">If you press \"Back\", no change will be made. Press \"Stay\" to continue the editing progress.</string>
+    <string name="pageAdd_check_new">If you press \"Back\", the data of this new alarm will lose. Press \"Stay\" to continue the setting progress.</string>
+    <string name="pageAdd_check_title">Back?</string>
+    <string name="pageAdd_check_stay">Stay</string>
+    <string name="pageAdd_check_back">Back</string>
 </resources>
