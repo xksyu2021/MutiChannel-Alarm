@@ -29,4 +29,12 @@
     <string name="pageAdd_check_title">Back?</string>
     <string name="pageAdd_check_stay">Stay</string>
     <string name="pageAdd_check_back">Back</string>
+    <string name="pageAdd_delCheck_title">Delete this alarm</string>
+    <string name="pageAdd_delCheck_text">This alarm will be deleted. Press \"Stay\" to cancel this action.</string>
+    <string name="pageAdd_delCheck_delete">Delete</string>
+    <string name="addPage_autoWeek_text">Automatically identify working days and rest days</string>
+    <string name="addPage_diy_ringtone">Ringtone</string>
+    <string name="addPage_diy_remind">Remind later</string>
+    <string name="addPage_diy_remind_1">times per</string>
+    <string name="addPage_diy_remind_2">minutes</string>
 </resources>
