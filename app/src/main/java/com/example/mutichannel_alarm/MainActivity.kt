@@ -187,17 +187,30 @@ fun topMenu(context: Context? = null)
 @SuppressLint("ComposableNaming")
 @Composable
 fun alarmPage(){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(6.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            stringResource(R.string.page1_empty),
-            style = MaterialTheme.typography.headlineLarge,
-        )
+    if(false){ //false for debug,update it when database is set.
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(6.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                stringResource(R.string.page1_empty),
+                style = MaterialTheme.typography.headlineLarge,
+            )
+        }
+    }else{
+        val scrollState = rememberScrollState()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            singleAlarmContent()
+        }
     }
 }
 
@@ -331,6 +344,33 @@ fun channelPage(settingsManager : SettingsManager){
                 Text(
                     stringResource(R.string.page2_modeDescribe_sys),
                     style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun singleAlarmContent(){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(0.95f)
+            .padding(vertical = 16.dp)
+    ){
+        Column() {
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "12:34",
+                    style = MaterialTheme.typography.headlineLarge
+
+                )
+                Text(
+                    text = "Weekdays",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
