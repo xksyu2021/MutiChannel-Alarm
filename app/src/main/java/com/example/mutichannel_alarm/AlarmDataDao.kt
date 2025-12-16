@@ -8,9 +8,9 @@ import androidx.room.Update
 @Dao
 interface AlarmDataDao {
     @Insert
-    fun insertAlarm(vararg data: AlarmData) : Long
+    suspend fun insertAlarm(vararg data: AlarmData) : Long
     @Delete
-    fun deleteAlarm(vararg data: AlarmData)
+    suspend fun deleteAlarm(vararg data: AlarmData)
     @Update
     suspend fun updateAlarm(vararg data: AlarmData)
     @Query("SELECT * FROM AlarmData WHERE id = :id")

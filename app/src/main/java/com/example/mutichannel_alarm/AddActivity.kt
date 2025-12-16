@@ -40,19 +40,34 @@ import java.util.Calendar
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.room.Database
+import androidx.room.PrimaryKey
+import androidx.room.Room
+import kotlinx.coroutines.Dispatchers
 
 
 class AddActivity : ComponentActivity() {
+    private lateinit var db: AppDatabase
+    private lateinit var alarmDataDao: AlarmDataDao
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isEdit = intent.getBooleanExtra("IS_EDIT", false)
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, "alarm-database"
+        ).build()
+        alarmDataDao = db.AlarmDataDao()
         setContent {
             ContrastAwareReplyTheme{
                 AddPage(onBack = {
                         finish()
                     },
                     onSave = {
-                        onSave()
+                        if(isEdit){
+                            onSaveEdit(db)
+                        }else {
+                            onSave(db)
+                        }
                         finish()
                     },
                     isEdit = isEdit,
@@ -194,6 +209,7 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun addConfigList(){
+    var text by remember { mutableStateOf("default") }
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
     val autoWeekName = arrayOf("weekdays","weekends")
     var autoEnabled by remember { mutableStateOf(false) }
@@ -204,6 +220,8 @@ fun addConfigList(){
     var remindMinutes = remember { mutableStateOf(5) }
     var remindEnabled by remember { mutableStateOf(true) }
     var ringtone by remember { mutableStateOf("default") }
+    var hour by remember { mutableStateOf(0) }
+    var minute by remember { mutableStateOf(0) }
 
     Card(
         modifier = Modifier
@@ -211,7 +229,6 @@ fun addConfigList(){
             .padding(horizontal = 10.dp)
             .padding(vertical = 15.dp)
     ){
-        var text by remember { mutableStateOf("default") }
         TextField(
             singleLine = true,
             value = text,
@@ -244,8 +261,9 @@ fun addConfigList(){
             TimeInput(
                 state = timePickerState,
             )
+            hour = timePickerState.hour
+            minute = timePickerState.minute
         }
-
     }
 
     HorizontalDivider(
@@ -462,7 +480,11 @@ fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>)
     )
 }
 
-fun onSave(){
+fun onSave(db: AppDatabase){
+
+}
+
+fun onSaveEdit(db: AppDatabase){
 
 }
 
