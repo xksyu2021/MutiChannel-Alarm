@@ -197,12 +197,13 @@ fun addConfigList(){
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
     val autoWeekName = arrayOf("weekdays","weekends")
     var autoEnabled by remember { mutableStateOf(false) }
-    val autoDays = remember { mutableStateListOf(true, false) }
-    val days = remember { mutableStateListOf(false, false, false, false, false, false, false) }
-    val remindTimes = remember { mutableStateOf(3) }
-    val remindMinutes = remember { mutableStateOf(5) }
+    var autoDays = remember { mutableStateListOf(true, false) }
+    var days = remember { mutableStateListOf<Boolean>() }
+        .apply { repeat(7) { add(false) } }
+    var remindTimes = remember { mutableStateOf(3) }
+    var remindMinutes = remember { mutableStateOf(5) }
     var remindEnabled by remember { mutableStateOf(true) }
-    val ringtone by remember { mutableStateOf("default") }
+    var ringtone by remember { mutableStateOf("default") }
 
     Card(
         modifier = Modifier
