@@ -47,16 +47,9 @@ import kotlinx.coroutines.Dispatchers
 
 
 class AddActivity : ComponentActivity() {
-    private lateinit var db: AppDatabase
-    private lateinit var alarmDataDao: AlarmDataDao
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isEdit = intent.getBooleanExtra("IS_EDIT", false)
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "alarm-database"
-        ).build()
-        alarmDataDao = db.AlarmDataDao()
         setContent {
             ContrastAwareReplyTheme{
                 AddPage(onBack = {
@@ -64,9 +57,9 @@ class AddActivity : ComponentActivity() {
                     },
                     onSave = {
                         if(isEdit){
-                            onSaveEdit(db)
+                            onSaveEdit()
                         }else {
-                            onSave(db)
+                            onSave()
                         }
                         finish()
                     },
@@ -480,11 +473,11 @@ fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>)
     )
 }
 
-fun onSave(db: AppDatabase){
+fun onSave(){
 
 }
 
-fun onSaveEdit(db: AppDatabase){
+fun onSaveEdit(){
 
 }
 
