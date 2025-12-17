@@ -14,7 +14,7 @@ interface AlarmDataDao {
     @Update
     suspend fun updateAlarm(vararg data: AlarmData)
     @Query("SELECT * FROM AlarmData WHERE id = :id")
-    suspend fun getUserById(id: Long): AlarmData?
+    suspend fun getById(id: Long): AlarmData?
     @Query("SELECT id FROM AlarmData")
     suspend fun getAllIds(): List<Long>
 }

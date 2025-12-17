@@ -35,23 +35,55 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.room.Room
+
+//UI data
+class SettingsManager(private val context: Context?) {
+    companion object {
+        private const val PREFS_NAME = "channel_settings"
+        private const val CHAN_VIB = "vibrate"
+        private const val CHAN_MODE = "mode"
+    }
+    private var previewMode: Int = 1
+    private var previewVib: Boolean = false
+
+    private val sharedPref: SharedPreferences? =
+        context?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    fun saveChanVib(able: Boolean) {
+        if (context != null) {
+            sharedPref?.edit()?.putBoolean(CHAN_VIB, able)?.apply()
+        } else {
+            previewVib = able
+        }
+    }
+    fun saveChanMode(mode: Int) {
+        if (context != null) {
+            sharedPref?.edit()?.putInt(CHAN_MODE, mode)?.apply()
+        } else {
+            previewMode = mode
+        }
+    }
+    fun getChanVib(): Boolean {
+        return if (context != null) {
+            sharedPref?.getBoolean(CHAN_VIB, false) ?: false
+        } else {
+            previewVib
+        }
+    }
+    fun getChanMode(): Int {
+        return if (context != null) {
+            sharedPref?.getInt(CHAN_MODE, 1) ?: 1
+        } else {
+            previewMode
+        }
+    }
+}
+
 //android main
 class MainActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
-    private lateinit var db: AppDatabase
-    private lateinit var alarmDataDao: AlarmDataDao
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         settingsManager = SettingsManager(this)
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "alarm-database"
-        ).build()
-        alarmDataDao = db.AlarmDataDao()
-
         setContent {
             ContrastAwareReplyTheme{
                 mainPage(settingsManager = settingsManager, context = this@MainActivity)
@@ -187,30 +219,17 @@ fun topMenu(context: Context? = null)
 @SuppressLint("ComposableNaming")
 @Composable
 fun alarmPage(){
-    if(false){ //false for debug,update it when database is set.
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(6.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                stringResource(R.string.page1_empty),
-                style = MaterialTheme.typography.headlineLarge,
-            )
-        }
-    }else{
-        val scrollState = rememberScrollState()
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            singleAlarmContent()
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(6.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            stringResource(R.string.page1_empty),
+            style = MaterialTheme.typography.headlineLarge,
+        )
     }
 }
 
@@ -344,33 +363,6 @@ fun channelPage(settingsManager : SettingsManager){
                 Text(
                     stringResource(R.string.page2_modeDescribe_sys),
                     style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun singleAlarmContent(){
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(0.95f)
-            .padding(vertical = 16.dp)
-    ){
-        Column() {
-            Column(
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "12:34",
-                    style = MaterialTheme.typography.headlineLarge
-
-                )
-                Text(
-                    text = "Weekdays",
-                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
