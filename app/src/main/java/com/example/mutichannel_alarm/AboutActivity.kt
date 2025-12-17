@@ -90,7 +90,7 @@ fun AboutPage(onBack: () -> Unit = {},version : String? = "null",context: Contex
                 style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Row(){
+            Row{
                 OutlinedButton(
                     onClick = {
                         openUrl(context = context,url = "https://github.com/xksyu2021/MutiChannel-Alarm")

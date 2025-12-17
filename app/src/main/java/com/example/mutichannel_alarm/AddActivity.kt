@@ -38,18 +38,21 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
 import java.util.Calendar
 import androidx.activity.compose.BackHandler
+import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.room.Database
-import androidx.room.PrimaryKey
-import androidx.room.Room
-import kotlinx.coroutines.Dispatchers
+import kotlin.String
 
 
 class AddActivity : ComponentActivity() {
+    private val alarmViewModel: AlarmViewModel by viewModels {
+        val repository = (application as MCApplication).repository
+        AlarmViewModelFactory(repository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isEdit = intent.getBooleanExtra("IS_EDIT", false)
+        var tempDB = AlarmTemp()
         setContent {
             ContrastAwareReplyTheme{
                 AddPage(onBack = {
@@ -58,13 +61,13 @@ class AddActivity : ComponentActivity() {
                     onSave = {
                         if(isEdit){
                             onSaveEdit()
-                        }else {
-                            onSave()
+                        }else{
+                            onSave(tempDB,alarmViewModel)
                         }
-                        finish()
                     },
                     isEdit = isEdit,
-                    context = this
+                    context = this,
+                    temp = tempDB
                 )
             }
         }
@@ -73,9 +76,10 @@ class AddActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, context: Context? = null){
+fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, context: Context? = null, temp :AlarmTemp){
     var showCheck by remember { mutableStateOf(false) }
     var showDelCheck by remember { mutableStateOf(false) }
+
     BackHandler(enabled = true) {
         showCheck = true
     }
@@ -183,7 +187,7 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
                 .padding(innerPadding)
                 .padding(top = 25.dp)
         ) {
-            addConfigList()
+            addConfigList(temp = temp)
             val focusManager = LocalFocusManager.current
             LaunchedEffect(Unit) {
                 focusManager.clearFocus()
@@ -201,20 +205,9 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun addConfigList(){
-    var text by remember { mutableStateOf("default") }
+fun addConfigList(temp :AlarmTemp){
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
     val autoWeekName = arrayOf("weekdays","weekends")
-    var autoEnabled by remember { mutableStateOf(false) }
-    var autoDays = remember { mutableStateListOf(true, false) }
-    var days = remember { mutableStateListOf<Boolean>() }
-        .apply { repeat(7) { add(false) } }
-    var remindTimes = remember { mutableStateOf(3) }
-    var remindMinutes = remember { mutableStateOf(5) }
-    var remindEnabled by remember { mutableStateOf(true) }
-    var ringtone by remember { mutableStateOf("default") }
-    var hour by remember { mutableStateOf(0) }
-    var minute by remember { mutableStateOf(0) }
 
     Card(
         modifier = Modifier
@@ -224,13 +217,12 @@ fun addConfigList(){
     ){
         TextField(
             singleLine = true,
-            value = text,
-            onValueChange = { text = it },
+            value = temp.text,
+            onValueChange = { temp.text = it },
             label = { Text("Alarm Name") },
             placeholder = null,
             modifier = Modifier
                 .padding(10.dp)
-
         )
     }
     Card(
@@ -254,8 +246,8 @@ fun addConfigList(){
             TimeInput(
                 state = timePickerState,
             )
-            hour = timePickerState.hour
-            minute = timePickerState.minute
+            temp.hour = timePickerState.hour
+            temp.minute = timePickerState.minute
         }
     }
 
@@ -279,7 +271,7 @@ fun addConfigList(){
             verticalAlignment = Alignment.CenterVertically
         ) {
             Switch(
-                checked = autoEnabled,
+                checked = temp.autoEnabled,
                 modifier = Modifier
                     .padding(
                         top = 8.dp,
@@ -288,31 +280,31 @@ fun addConfigList(){
                         start = 0.dp
                     ),
                 onCheckedChange = {
-                    autoEnabled = !autoEnabled
+                    temp.autoEnabled = !temp.autoEnabled
                 }
             )
             Text(stringResource(R.string.addPage_autoWeek_text))
         }
     }
-    if (autoEnabled){
+    if (temp.autoEnabled){
         Row {
-            autoDaysChip(0,autoDays,autoWeekName)
+            autoDaysChip(0,temp.autoDays,autoWeekName)
             Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-            autoDaysChip(1,autoDays,autoWeekName)
+            autoDaysChip(1,temp.autoDays,autoWeekName)
         }
     }else{
         Row {
-            daysChip(0,days,weekName)
+            daysChip(0,temp.days,weekName)
             for (code in 1..2){
                 Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                daysChip(code,days,weekName)
+                daysChip(code,temp.days,weekName)
             }
         }
         Row {
-            daysChip(3,days,weekName)
+            daysChip(3,temp.days,weekName)
             for (code in 4..6){
                 Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                daysChip(code,days,weekName)
+                daysChip(code,temp.days,weekName)
             }
         }
     }
@@ -341,7 +333,7 @@ fun addConfigList(){
                 Text(stringResource(R.string.addPage_diy_ringtone),
                     style = MaterialTheme.typography.titleLarge
                 )
-                Text("$ringtone")
+                Text("${temp.ringtone}")
             }
         }
     }
@@ -359,26 +351,26 @@ fun addConfigList(){
                 style = MaterialTheme.typography.titleLarge
             )
             Switch(
-                checked = remindEnabled,
+                checked = temp.remindEnabled,
                 modifier = Modifier
                     .padding(10.dp),
                 onCheckedChange = {
-                    remindEnabled = !remindEnabled
+                    temp.remindEnabled = !temp.remindEnabled
                 }
             )
         }
-        if(remindEnabled) {
+        if(temp.remindEnabled) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("${remindTimes.value}")
-                remindTimeDropdown(remindTimes)
+                Text("${temp.remindTimes}")
+                remindTimeDropdown(temp)
                 Text(stringResource(R.string.addPage_diy_remind_1),
                     maxLines = 1
                 )
                 Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-                Text("${remindMinutes.value}")
-                remindMinutesDropdown(remindMinutes)
+                Text("${temp.remindMinutes}")
+                remindMinutesDropdown(temp)
                 Text(stringResource(R.string.addPage_diy_remind_2),
                     maxLines = 1
                 )
@@ -388,7 +380,7 @@ fun addConfigList(){
 }
 
 @Composable
-fun remindTimeDropdown(remindTimes: MutableState<Int>) {
+fun remindTimeDropdown(temp :AlarmTemp) {
     var expanded by remember { mutableStateOf(false) }
     Box{
         IconButton(onClick = { expanded = !expanded }) {
@@ -403,14 +395,14 @@ fun remindTimeDropdown(remindTimes: MutableState<Int>) {
             for (code in 1..5){
                 DropdownMenuItem(
                     text = { Text("$code") },
-                    onClick = { remindTimes.value = code }
+                    onClick = { temp.remindTimes = code }
                 )
             }
         }
     }
 }
 @Composable
-fun remindMinutesDropdown(remindMinutes: MutableState<Int>) {
+fun remindMinutesDropdown(temp :AlarmTemp) {
     var expanded by remember { mutableStateOf(false) }
     Box{
         IconButton(onClick = { expanded = !expanded }) {
@@ -425,7 +417,7 @@ fun remindMinutesDropdown(remindMinutes: MutableState<Int>) {
             for (code in listOf(3,5,10,15,20)){
                 DropdownMenuItem(
                     text = { Text("$code") },
-                    onClick = { remindMinutes.value = code }
+                    onClick = { temp.remindMinutes = code }
                 )
             }
         }
@@ -473,10 +465,24 @@ fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>)
     )
 }
 
-fun onSave(){
-
+fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel){
+    val db = AlarmData(
+        name = temp.text,
+        timeHour = temp.hour,
+        timeMinute = temp.minute,
+        autoWeek = temp.autoEnabled,
+        remind = temp.remindEnabled,
+        remindTime = temp.remindTimes,
+        remindMinute = temp.remindMinutes
+    )
+    if(temp.autoEnabled){
+        db.weekSelect[0] = temp.autoDays[0]
+        db.weekSelect[1] = temp.autoDays[1]
+    }else{
+        db.weekSelect =  ArrayList(temp.days)
+    }
+    alarmViewModel.insert(db)
 }
-
 fun onSaveEdit(){
 
 }
@@ -485,6 +491,6 @@ fun onSaveEdit(){
 @Composable
 fun AddPreview(){
     ContrastAwareReplyTheme{
-        AddPage(isEdit = false)
+        AddPage(isEdit = false, temp = AlarmTemp())
     }
 }
