@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
     private val alarmViewModel: AlarmViewModel by viewModels {
         val repository = (application as MCApplication).repository
-        AlarmViewModelFactory(repository)
+        AlarmViewModelFactory(repository=repository)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

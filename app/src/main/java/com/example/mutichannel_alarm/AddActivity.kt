@@ -39,20 +39,29 @@ import java.util.Calendar
 import androidx.activity.compose.BackHandler
 import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalFocusManager
+import kotlinx.coroutines.flow.SharingStarted
 import kotlin.String
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 
 class AddActivity : ComponentActivity() {
-    private val alarmViewModel: AlarmViewModel by viewModels {
-        val repository = (application as MCApplication).repository
-        AlarmViewModelFactory(repository)
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isEdit = intent.getBooleanExtra("IS_EDIT", false)
-        val editID = intent.getIntExtra("ALARM_ID", 0)
-        var tempDB = AlarmTemp()
+        val editID = intent.getLongExtra("ALARM_ID", -1)
+
+        val alarmViewModel: AlarmViewModel by viewModels {
+            val repository = (application as MCApplication).repository
+            AlarmViewModelFactory(editID,repository)
+        }
+
+        val tempDB = AlarmTemp()
+
         setContent {
             ContrastAwareReplyTheme{
                 AddPage(onBack = {
@@ -60,14 +69,15 @@ class AddActivity : ComponentActivity() {
                     },
                     onSave = {
                         if(isEdit){
-                            if(onSaveEdit(this)) { finish() }
+                            if(onSaveEdit(tempDB,alarmViewModel,this)) { finish() }
                         }else{
                             if(onSave(tempDB,alarmViewModel,this)) { finish() }
                         }
                     },
                     isEdit = isEdit,
                     context = this,
-                    temp = tempDB
+                    temp = tempDB,
+                    alarmViewModel = alarmViewModel,
                 )
             }
         }
@@ -76,10 +86,26 @@ class AddActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, context: Context? = null, temp :AlarmTemp){
+fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, context: Context? = null, temp :AlarmTemp,alarmViewModel: AlarmViewModel,){
     var showCheck by remember { mutableStateOf(false) }
     var showDelCheck by remember { mutableStateOf(false) }
 
+    var dataLoaded by remember { mutableStateOf(!isEdit) }
+    if (isEdit && !dataLoaded) {
+        val alarmById by alarmViewModel.alarmById.collectAsState()
+        LaunchedEffect(alarmById) {
+            alarmById?.let { alarm ->
+                temp.text.value = alarm.name
+                temp.autoEnabled.value = alarm.autoWeek
+                temp.remindTimes.value = alarm.remindTime
+                temp.remindMinutes.value = alarm.remindMinute
+                temp.remindEnabled.value = alarm.remind
+                temp.hour.value = alarm.timeHour
+                temp.minute.value = alarm.timeMinute
+            }
+        }
+        dataLoaded = true
+    }
     BackHandler(enabled = true) {
         showCheck = true
     }
@@ -125,6 +151,7 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
             dismissButton = {
                 Button(onClick = {
                         showDelCheck = false
+                        alarmViewModel.delete(alarmViewModel.alarmById.value)
                         onBack()
                     }
                 ) {
@@ -404,6 +431,7 @@ fun remindTimeDropdown(temp :AlarmTemp) {
         }
     }
 }
+
 @Composable
 fun remindMinutesDropdown(temp :AlarmTemp) {
     var expanded by remember { mutableStateOf(false) }
@@ -505,15 +533,38 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context) : B
     //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
     return true
 }
-fun onSaveEdit(context: Context) : Boolean {
+fun onSaveEdit(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context) : Boolean {
+    var weekSelectTemp = 0b0
+    if (temp.autoEnabled.value) {
+        for (code in 0..1) {
+            if(temp.autoDays[code]){
+                weekSelectTemp = weekSelectTemp or (0b1 shl code)
+            }
+        }
+    } else {
+        for (code in 0..6) {
+            if(temp.days[code]){
+                weekSelectTemp = weekSelectTemp or (0b1 shl code)
+            }
+        }
+    }
+    if(weekSelectTemp==0){
+        Toast.makeText(context, "no day selected", Toast.LENGTH_LONG).show()
+        return false
+    }
+    alarmViewModel.alarmById.value?.let { alarm ->
+        with(alarm) {
+            name = temp.text.value
+            timeHour = temp.hour.value
+            timeMinute = temp.minute.value
+            autoWeek = temp.autoEnabled.value
+            remindTime = temp.remindTimes.value
+            remindMinute = temp.remindMinutes.value
+            remind = temp.remindEnabled.value
+            weekSelect = weekSelectTemp
+        }
+    }
+    alarmViewModel.update(alarmViewModel.alarmById.value)
     //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
     return true
-}
-
-@Preview
-@Composable
-fun AddPreview(){
-    ContrastAwareReplyTheme{
-        AddPage(isEdit = false, temp = AlarmTemp())
-    }
 }

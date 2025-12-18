@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity
 data class AlarmData(
     @PrimaryKey(autoGenerate = true)
-    val id :Int = 0,
+    val id : Long = 0,
 
     var name :String = "alarm_$id",
     var timeHour :Int = 0,

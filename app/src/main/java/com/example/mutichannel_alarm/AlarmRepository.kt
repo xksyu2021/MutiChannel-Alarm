@@ -5,13 +5,13 @@ class AlarmRepository(private val alarmDao: AlarmDataDao) {
     suspend fun insertAlarm(data: AlarmData){
         alarmDao.insertAlarm(data)
     }
-    suspend fun deleteAlarm(data: AlarmData) {
+    suspend fun deleteAlarm(data: AlarmData? = null) {
         alarmDao.deleteAlarm(data)
     }
-    suspend fun updateAlarm(data: AlarmData) {
+    suspend fun updateAlarm(data: AlarmData?) {
         alarmDao.updateAlarm(data)
     }
-    fun getById(id: Long): Flow<AlarmData> {
+    suspend fun getById(id: Long): AlarmData? {
         return alarmDao.getById(id)
     }
     val alarms: Flow<List<AlarmData>> = alarmDao.getAll()
