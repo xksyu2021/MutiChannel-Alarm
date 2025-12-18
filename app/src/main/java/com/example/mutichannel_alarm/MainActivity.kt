@@ -32,22 +32,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import kotlin.getValue
-import androidx.lifecycle.lifecycleScope
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlin.getValue
 
 //android main
 class MainActivity : ComponentActivity() {
@@ -134,7 +123,7 @@ fun mainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel, c
         ) {
             when(showPage){
                 1 -> channelPage(settingsManager = settingsManager)
-                else -> alarmPage(alarmViewModel = alarmViewModel)
+                else -> alarmPage(alarmViewModel = alarmViewModel,context = context)
             }
         }
     }
@@ -193,9 +182,12 @@ fun topMenu(context: Context? = null)
 //alarmPage
 @SuppressLint("ComposableNaming")
 @Composable
-fun alarmPage(alarmViewModel: AlarmViewModel){
+fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
     val scrollState = rememberScrollState()
     val alarms by remember { alarmViewModel.alarms }.collectAsState(initial = emptyList())
+    val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
+    val autoWeekName = arrayOf("weekdays","weekends")
+
     if(alarms.isEmpty()){
         Column(
             modifier = Modifier
@@ -218,34 +210,79 @@ fun alarmPage(alarmViewModel: AlarmViewModel){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             for(alarm in alarms){
+                var open by remember { mutableStateOf(alarm.isOpen) }
+                var weekSelect :String = ""
+                if(alarm.autoWeek){
+                    for (code in 0..1) {
+                        if(alarm.weekSelect and (0b1 shl code) != 0){
+                            weekSelect = weekSelect.plus(autoWeekName[code]).plus("  ")
+                        }
+                    }
+                }else{
+                    for (code in 0..6) {
+                        if(alarm.weekSelect and (0b1 shl code) != 0){
+                            weekSelect = weekSelect.plus(weekName[code]).plus("  ")
+                        }
+                    }
+                }
+
                 Card(
                     modifier = Modifier
                         .padding(bottom = 10.dp)
                         .fillMaxWidth(),
                     onClick = {
-
+                        val intent = Intent(context, AddActivity::class.java)
+                        intent.putExtra("IS_EDIT", true)
+                        intent.putExtra("ALARM_ID", alarm.id)
+                        context?.startActivity(intent)
                     }
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(10.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.Bottom
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Column(
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .weight(1f)
                         ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = String.format(
+                                        "%02d:%02d",
+                                        alarm.timeHour,
+                                        alarm.timeMinute
+                                    ),
+                                    style = MaterialTheme.typography.headlineLarge
+                                )
+                                Spacer(modifier = Modifier.padding(horizontal = 10.dp))
+                                Text(
+                                    text = alarm.name,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                             Text(
-                                text = String.format("%02d:%02d", alarm.timeHour, alarm.timeMinute),
-                                style = MaterialTheme.typography.headlineLarge
-                            )
-                            Spacer(modifier = Modifier.padding(horizontal = 15.dp))
-                            Text(
-                                text = alarm.name,
-                                style = MaterialTheme.typography.bodyMedium
+                                text = weekSelect,
+                                style = MaterialTheme.typography.bodyLarge
                             )
                         }
-                        Text(
-                            text = "weekday",
-                            style = MaterialTheme.typography.headlineSmall
+
+                        Switch(
+                            checked = open,
+                            modifier = Modifier
+                                .padding(
+                                    top = 8.dp,
+                                    bottom = 8.dp,
+                                    end = 8.dp,
+                                    start = 0.dp
+                                ),
+                            onCheckedChange = {
+                                alarm.isOpen = !alarm.isOpen
+                                open = !open
+                                alarmViewModel.update(alarm)
+                            }
                         )
                     }
                 }

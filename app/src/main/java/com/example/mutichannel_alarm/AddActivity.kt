@@ -2,6 +2,7 @@ package com.example.mutichannel_alarm
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -21,7 +22,6 @@ import androidx.compose.material3.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.graphics.Color
@@ -52,6 +51,7 @@ class AddActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isEdit = intent.getBooleanExtra("IS_EDIT", false)
+        val editID = intent.getIntExtra("ALARM_ID", 0)
         var tempDB = AlarmTemp()
         setContent {
             ContrastAwareReplyTheme{
@@ -60,11 +60,10 @@ class AddActivity : ComponentActivity() {
                     },
                     onSave = {
                         if(isEdit){
-                            onSaveEdit()
+                            if(onSaveEdit(this)) { finish() }
                         }else{
-                            onSave(tempDB,alarmViewModel)
+                            if(onSave(tempDB,alarmViewModel,this)) { finish() }
                         }
-                        finish()
                     },
                     isEdit = isEdit,
                     context = this,
@@ -218,8 +217,8 @@ fun addConfigList(temp :AlarmTemp){
     ){
         TextField(
             singleLine = true,
-            value = temp.text,
-            onValueChange = { temp.text = it },
+            value = temp.text.value,
+            onValueChange = { temp.text.value = it },
             label = { Text("Alarm Name") },
             placeholder = null,
             modifier = Modifier
@@ -247,8 +246,8 @@ fun addConfigList(temp :AlarmTemp){
             TimeInput(
                 state = timePickerState,
             )
-            temp.hour = timePickerState.hour
-            temp.minute = timePickerState.minute
+            temp.hour.value = timePickerState.hour
+            temp.minute.value = timePickerState.minute
         }
     }
 
@@ -272,7 +271,7 @@ fun addConfigList(temp :AlarmTemp){
             verticalAlignment = Alignment.CenterVertically
         ) {
             Switch(
-                checked = temp.autoEnabled,
+                checked = temp.autoEnabled.value,
                 modifier = Modifier
                     .padding(
                         top = 8.dp,
@@ -281,13 +280,13 @@ fun addConfigList(temp :AlarmTemp){
                         start = 0.dp
                     ),
                 onCheckedChange = {
-                    temp.autoEnabled = !temp.autoEnabled
+                    temp.autoEnabled.value = !temp.autoEnabled.value
                 }
             )
             Text(stringResource(R.string.addPage_autoWeek_text))
         }
     }
-    if (temp.autoEnabled){
+    if (temp.autoEnabled.value){
         Row {
             autoDaysChip(0,temp.autoDays,autoWeekName)
             Spacer(modifier = Modifier.padding(horizontal = 10.dp))
@@ -334,7 +333,7 @@ fun addConfigList(temp :AlarmTemp){
                 Text(stringResource(R.string.addPage_diy_ringtone),
                     style = MaterialTheme.typography.titleLarge
                 )
-                Text("${temp.ringtone}")
+                Text("${temp.ringtone.value}")
             }
         }
     }
@@ -352,25 +351,25 @@ fun addConfigList(temp :AlarmTemp){
                 style = MaterialTheme.typography.titleLarge
             )
             Switch(
-                checked = temp.remindEnabled,
+                checked = temp.remindEnabled.value,
                 modifier = Modifier
                     .padding(10.dp),
                 onCheckedChange = {
-                    temp.remindEnabled = !temp.remindEnabled
+                    temp.remindEnabled.value = !temp.remindEnabled.value
                 }
             )
         }
-        if(temp.remindEnabled) {
+        if(temp.remindEnabled.value) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("${temp.remindTimes}")
+                Text("${temp.remindTimes.value}")
                 remindTimeDropdown(temp)
                 Text(stringResource(R.string.addPage_diy_remind_1),
                     maxLines = 1
                 )
                 Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-                Text("${temp.remindMinutes}")
+                Text("${temp.remindMinutes.value}")
                 remindMinutesDropdown(temp)
                 Text(stringResource(R.string.addPage_diy_remind_2),
                     maxLines = 1
@@ -396,7 +395,10 @@ fun remindTimeDropdown(temp :AlarmTemp) {
             for (code in 1..5){
                 DropdownMenuItem(
                     text = { Text("$code") },
-                    onClick = { temp.remindTimes = code }
+                    onClick = {
+                        temp.remindTimes.value = code
+                        expanded = false
+                    }
                 )
             }
         }
@@ -418,7 +420,10 @@ fun remindMinutesDropdown(temp :AlarmTemp) {
             for (code in listOf(3,5,10,15,20)){
                 DropdownMenuItem(
                     text = { Text("$code") },
-                    onClick = { temp.remindMinutes = code }
+                    onClick = {
+                        temp.remindMinutes.value = code
+                        expanded = false
+                    }
                 )
             }
         }
@@ -466,9 +471,9 @@ fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>)
     )
 }
 
-fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel){
+fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context) : Boolean {
     var weekSelectTemp = 0b0
-    if (temp.autoEnabled) {
+    if (temp.autoEnabled.value) {
         for (code in 0..1) {
             if(temp.autoDays[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
@@ -481,22 +486,28 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel){
             }
         }
     }
-
+    if(weekSelectTemp==0){
+        Toast.makeText(context, "no day selected", Toast.LENGTH_LONG).show()
+        return false
+    }
     val db = AlarmData(
-        name = temp.text,
-        timeHour = temp.hour,
-        timeMinute = temp.minute,
-        autoWeek = temp.autoEnabled,
-        remind = temp.remindEnabled,
-        remindTime = temp.remindTimes,
-        remindMinute = temp.remindMinutes,
+        name = temp.text.value,
+        timeHour = temp.hour.value,
+        timeMinute = temp.minute.value,
+        autoWeek = temp.autoEnabled.value,
+        remind = temp.remindEnabled.value,
+        remindTime = temp.remindTimes.value,
+        remindMinute = temp.remindMinutes.value,
         weekSelect = weekSelectTemp
     )
     alarmViewModel.insert(db)
     alarmViewModel.update(db)
+    //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+    return true
 }
-fun onSaveEdit(){
-
+fun onSaveEdit(context: Context) : Boolean {
+    //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+    return true
 }
 
 @Preview

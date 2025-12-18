@@ -1,17 +1,19 @@
 package com.example.mutichannel_alarm
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.mutableStateOf
 
 data class AlarmTemp(
-    var text: String = "default",
-    var autoEnabled: Boolean = false,
+    val text: MutableState<String> = mutableStateOf("default"),
+    val autoEnabled: MutableState<Boolean> = mutableStateOf(false),
     val autoDays: SnapshotStateList<Boolean> = mutableStateListOf(true, false),
     val days: SnapshotStateList<Boolean> = mutableStateListOf<Boolean>().apply { repeat(7) { add(false) } },
-    var remindTimes: Int = 3,
-    var remindMinutes: Int = 5,
-    var remindEnabled: Boolean = true,
-    var ringtone: String = "default",
-    var hour: Int = 0,
-    var minute: Int = 0
+    val remindTimes: MutableState<Int> = mutableStateOf(3),
+    val remindMinutes: MutableState<Int> = mutableStateOf(5),
+    val remindEnabled: MutableState<Boolean> = mutableStateOf(true),
+    val ringtone: MutableState<String> = mutableStateOf("default"),
+    val hour: MutableState<Int> = mutableStateOf(0),
+    val minute: MutableState<Int> = mutableStateOf(0)
 )

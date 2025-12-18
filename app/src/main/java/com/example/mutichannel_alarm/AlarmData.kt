@@ -1,6 +1,5 @@
 package com.example.mutichannel_alarm
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -18,5 +17,7 @@ data class AlarmData(
 
     var remind : Boolean = true,
     var remindTime : Int = 3,
-    var remindMinute : Int = 5
+    var remindMinute : Int = 5,
+
+    var isOpen : Boolean = true
 )
