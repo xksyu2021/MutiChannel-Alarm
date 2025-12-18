@@ -33,18 +33,29 @@ import androidx.compose.foundation.verticalScroll
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import kotlin.getValue
+import androidx.lifecycle.lifecycleScope
 
 //android main
 class MainActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
+    private val alarmViewModel: AlarmViewModel by viewModels {
+        val repository = (application as MCApplication).repository
+        AlarmViewModelFactory(repository)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settingsManager = SettingsManager(this)
         setContent {
             ContrastAwareReplyTheme{
-                mainPage(settingsManager = settingsManager, context = this@MainActivity)
+                mainPage(settingsManager = settingsManager, alarmViewModel = alarmViewModel, context = this@MainActivity)
             }
         }
     }
@@ -53,7 +64,7 @@ class MainActivity : ComponentActivity() {
 //the main page index.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mainPage(settingsManager :SettingsManager,context :Context? = null) {
+fun mainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel? = null, context :Context? = null) {
     var showPage by remember { mutableIntStateOf(0) } //1 for debug. set it as 0 in release.
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -117,7 +128,7 @@ fun mainPage(settingsManager :SettingsManager,context :Context? = null) {
         ) {
             when(showPage){
                 1 -> channelPage(settingsManager = settingsManager)
-                else -> alarmPage()
+                else -> alarmPage(alarmViewModel = alarmViewModel)
             }
         }
     }
@@ -176,18 +187,45 @@ fun topMenu(context: Context? = null)
 //alarmPage
 @SuppressLint("ComposableNaming")
 @Composable
-fun alarmPage(){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(6.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            stringResource(R.string.page1_empty),
-            style = MaterialTheme.typography.headlineLarge,
-        )
+fun alarmPage(alarmViewModel: AlarmViewModel? = null){
+
+    if(false){
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(6.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                stringResource(R.string.page1_empty),
+                style = MaterialTheme.typography.headlineLarge,
+            )
+        }
+    }else{
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Card(modifier = Modifier
+                //.padding(vertical = 10.dp)
+                .fillMaxWidth(),
+                onClick = {
+
+                }
+            ){
+                Column(modifier = Modifier
+                    .padding(10.dp)
+                ) {
+                    Text(text = "12:34",
+                        style = MaterialTheme.typography.headlineLarge)
+                    Text(text = "weekdays",
+                        style = MaterialTheme.typography.headlineSmall)
+                }
+            }
+        }
     }
 }
 
@@ -345,6 +383,6 @@ fun updateChannelSelect(select:Int){
 fun MainPreview() {
     val previewSettingsManager = SettingsManager(null)
     ContrastAwareReplyTheme {
-        mainPage(settingsManager = previewSettingsManager)
+        mainPage(settingsManager = previewSettingsManager, alarmViewModel = null)
     }
 }

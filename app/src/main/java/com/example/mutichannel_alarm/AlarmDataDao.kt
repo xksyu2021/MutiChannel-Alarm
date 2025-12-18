@@ -4,6 +4,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AlarmDataDao {
@@ -14,7 +15,7 @@ interface AlarmDataDao {
     @Update
     suspend fun updateAlarm(vararg data: AlarmData)
     @Query("SELECT * FROM AlarmData WHERE id = :id")
-    suspend fun getById(id: Long): AlarmData?
-    @Query("SELECT id FROM AlarmData")
-    suspend fun getAllIds(): List<Long>
+    fun getById(id: Long): Flow<AlarmData>
+    @Query("SELECT * FROM AlarmData")
+    fun getAll(): Flow<List<AlarmData>>
 }

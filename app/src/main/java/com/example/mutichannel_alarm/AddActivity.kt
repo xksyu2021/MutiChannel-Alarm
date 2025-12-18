@@ -493,6 +493,7 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel){
         weekSelect = weekSelectTemp
     )
     alarmViewModel.insert(db)
+    alarmViewModel.update(db)
 }
 fun onSaveEdit(){
 

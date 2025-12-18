@@ -1,4 +1,5 @@
 package com.example.mutichannel_alarm
+import kotlinx.coroutines.flow.Flow
 
 class AlarmRepository(private val alarmDao: AlarmDataDao) {
     suspend fun insertAlarm(data: AlarmData){
@@ -10,10 +11,8 @@ class AlarmRepository(private val alarmDao: AlarmDataDao) {
     suspend fun updateAlarm(data: AlarmData) {
         alarmDao.updateAlarm(data)
     }
-    suspend fun getById(id: Long): AlarmData? {
+    fun getById(id: Long): Flow<AlarmData> {
         return alarmDao.getById(id)
     }
-    suspend fun getAllIds(): List<Long> {
-        return alarmDao.getAllIds()
-    }
+    val alarms: Flow<List<AlarmData>> = alarmDao.getAll()
 }
