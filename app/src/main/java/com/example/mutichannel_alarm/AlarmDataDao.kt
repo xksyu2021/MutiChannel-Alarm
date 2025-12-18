@@ -8,7 +8,7 @@ import androidx.room.Update
 @Dao
 interface AlarmDataDao {
     @Insert
-    suspend fun insertAlarm(vararg data: AlarmData) : Long
+    suspend fun insertAlarm(vararg data: AlarmData)
     @Delete
     suspend fun deleteAlarm(vararg data: AlarmData)
     @Update

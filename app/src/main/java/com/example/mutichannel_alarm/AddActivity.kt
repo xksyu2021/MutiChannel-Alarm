@@ -64,6 +64,7 @@ class AddActivity : ComponentActivity() {
                         }else{
                             onSave(tempDB,alarmViewModel)
                         }
+                        finish()
                     },
                     isEdit = isEdit,
                     context = this,
@@ -466,6 +467,21 @@ fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>)
 }
 
 fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel){
+    var weekSelectTemp = 0b0
+    if (temp.autoEnabled) {
+        for (code in 0..1) {
+            if(temp.autoDays[code]){
+                weekSelectTemp = weekSelectTemp or (0b1 shl code)
+            }
+        }
+    } else {
+        for (code in 0..6) {
+            if(temp.days[code]){
+                weekSelectTemp = weekSelectTemp or (0b1 shl code)
+            }
+        }
+    }
+
     val db = AlarmData(
         name = temp.text,
         timeHour = temp.hour,
@@ -473,14 +489,9 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel){
         autoWeek = temp.autoEnabled,
         remind = temp.remindEnabled,
         remindTime = temp.remindTimes,
-        remindMinute = temp.remindMinutes
+        remindMinute = temp.remindMinutes,
+        weekSelect = weekSelectTemp
     )
-    if(temp.autoEnabled){
-        db.weekSelect[0] = temp.autoDays[0]
-        db.weekSelect[1] = temp.autoDays[1]
-    }else{
-        db.weekSelect =  ArrayList(temp.days)
-    }
     alarmViewModel.insert(db)
 }
 fun onSaveEdit(){

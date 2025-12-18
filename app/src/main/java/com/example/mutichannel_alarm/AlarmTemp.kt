@@ -14,6 +14,4 @@ data class AlarmTemp(
     var ringtone: String = "default",
     var hour: Int = 0,
     var minute: Int = 0
-){
-
-}
+)
