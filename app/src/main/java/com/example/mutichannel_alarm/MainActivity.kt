@@ -42,6 +42,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import kotlin.getValue
 import androidx.lifecycle.lifecycleScope
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlin.getValue
 
 //android main
 class MainActivity : ComponentActivity() {
@@ -64,7 +70,7 @@ class MainActivity : ComponentActivity() {
 //the main page index.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel? = null, context :Context? = null) {
+fun mainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel, context :Context? = null) {
     var showPage by remember { mutableIntStateOf(0) } //1 for debug. set it as 0 in release.
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -187,9 +193,10 @@ fun topMenu(context: Context? = null)
 //alarmPage
 @SuppressLint("ComposableNaming")
 @Composable
-fun alarmPage(alarmViewModel: AlarmViewModel? = null){
-
-    if(false){
+fun alarmPage(alarmViewModel: AlarmViewModel){
+    val scrollState = rememberScrollState()
+    val alarms by remember { alarmViewModel.alarms }.collectAsState(initial = emptyList())
+    if(alarms.isEmpty()){
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -206,23 +213,41 @@ fun alarmPage(alarmViewModel: AlarmViewModel? = null){
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Card(modifier = Modifier
-                //.padding(vertical = 10.dp)
-                .fillMaxWidth(),
-                onClick = {
+            for(alarm in alarms){
+                Card(
+                    modifier = Modifier
+                        .padding(bottom = 10.dp)
+                        .fillMaxWidth(),
+                    onClick = {
 
-                }
-            ){
-                Column(modifier = Modifier
-                    .padding(10.dp)
+                    }
                 ) {
-                    Text(text = "12:34",
-                        style = MaterialTheme.typography.headlineLarge)
-                    Text(text = "weekdays",
-                        style = MaterialTheme.typography.headlineSmall)
+                    Column(
+                        modifier = Modifier
+                            .padding(10.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Text(
+                                text = String.format("%02d:%02d", alarm.timeHour, alarm.timeMinute),
+                                style = MaterialTheme.typography.headlineLarge
+                            )
+                            Spacer(modifier = Modifier.padding(horizontal = 15.dp))
+                            Text(
+                                text = alarm.name,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        Text(
+                            text = "weekday",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                    }
                 }
             }
         }
@@ -378,11 +403,3 @@ fun updateChannelSelect(select:Int){
 
 
 //preview in android studio.
-@Preview(showBackground = true)
-@Composable
-fun MainPreview() {
-    val previewSettingsManager = SettingsManager(null)
-    ContrastAwareReplyTheme {
-        mainPage(settingsManager = previewSettingsManager, alarmViewModel = null)
-    }
-}
