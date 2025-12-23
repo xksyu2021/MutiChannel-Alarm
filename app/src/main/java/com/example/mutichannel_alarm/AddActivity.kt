@@ -84,6 +84,11 @@ class AddActivity : ComponentActivity() {
                     temp = tempDB,
                     alarmViewModel = alarmViewModel,
                 )
+                if(isEdit){
+                    println("----------------EDIT mode----------------")
+                }else{
+                    println("----------------CREATE mode----------------")
+                }
             }
         }
     }
@@ -228,12 +233,8 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
     val autoWeekName = arrayOf("weekdays","weekends")
 
-    if(isEdit){
-        println("----------------EDIT mode----------------")
-    }else{
-        println("----------------CREATE mode----------------")
-    }
-
+    println("****** List Recompose Count ******")
+    var updateStatu by remember { mutableStateOf(!isEdit) }
     if (isEdit) {
         LaunchedEffect(alarmById) {
             alarmById?.let { alarm ->
@@ -253,15 +254,17 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
                         if((alarm.weekSelect and (0b1 shl code))!=0) temp.days[code] = true
                     }
                 }
+                updateStatu = true
+                println("****** LaunchedEffect for temp Count ******")
                 println("DEBUG AlarmData values:")
                 println("  id: ${alarm.id}")
                 println("  timeHour: ${alarm.timeHour}, timeMinute: ${alarm.timeMinute}")
                 println("  name: ${alarm.name}")
+                println("DEBUG AlarmTemp values:")
+                println("  hour: ${temp.hour.value}, minute: ${temp.minute.value}")
+                println("  text: ${temp.text.value}")
             }
         }
-        println("DEBUG AlarmTemp values:")
-        println("  hour: ${temp.hour.value}, minute: ${temp.minute.value}")
-        println("  text: ${temp.text.value}")
     }
 
     Card(
@@ -280,37 +283,51 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
                 .padding(10.dp)
         )
     }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(0.85f)
-            .padding(horizontal = 10.dp)
-            .padding(vertical = 15.dp)
-    ){
-        val currentTime = Calendar.getInstance()
-        val defHour = if(isEdit) temp.hour.value else currentTime.get(Calendar.HOUR_OF_DAY)
-        val defMinute = if(isEdit) temp.minute.value else currentTime.get(Calendar.MINUTE)
-
-        val timePickerState = rememberTimePickerState(
-            initialHour = defHour,
-            initialMinute = defMinute,
-            is24Hour = true
-        )
-        LaunchedEffect(temp.hour.value, temp.minute.value) {
-            timePickerState.hour = temp.hour.value
-            timePickerState.minute = temp.minute.value
-        }
-
-        Box(
-            contentAlignment = Alignment.Center,
+    if(updateStatu){
+        Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 15.dp)
+                .fillMaxWidth(0.85f)
+                .padding(horizontal = 10.dp)
+                .padding(vertical = 15.dp)
         ){
-            TimeInput(
-                state = timePickerState,
+            val currentTime = Calendar.getInstance()
+            val defHour = if(isEdit) temp.hour.value else currentTime.get(Calendar.HOUR_OF_DAY)
+            val defMinute = if(isEdit) temp.minute.value else currentTime.get(Calendar.MINUTE)
+
+            val timePickerState = rememberTimePickerState(
+                initialHour = defHour,
+                initialMinute = defMinute,
+                is24Hour = true
             )
-            temp.hourGet.value = timePickerState.hour
-            temp.minuteGet.value = timePickerState.minute
+
+            println("DEBUG TimeInput")
+            println("   initHour : ${timePickerState.hour}, initMinute : ${timePickerState.minute}")
+            if(isEdit) {
+                LaunchedEffect(temp.hour.value, temp.minute.value) {
+                    timePickerState.hour = temp.hour.value
+                    timePickerState.minute = temp.minute.value
+                }
+                println("****** LaunchedEffect for timeInput Count ******")
+                println("DEBUG TimeInput in LaunchedEffect")
+                println("   initHour : ${timePickerState.hour}, initMinute : ${timePickerState.minute}")
+            }
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 15.dp)
+            ){
+                TimeInput(
+                    state = timePickerState,
+                )
+                temp.hourGet.value = timePickerState.hour
+                temp.minuteGet.value = timePickerState.minute
+            }
+        }
+        val focusManager = LocalFocusManager.current
+        LaunchedEffect(Unit) {
+            focusManager.clearFocus()
         }
     }
 
