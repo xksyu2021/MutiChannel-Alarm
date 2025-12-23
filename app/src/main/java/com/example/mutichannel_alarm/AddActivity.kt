@@ -60,7 +60,7 @@ class AddActivity : ComponentActivity() {
             AlarmViewModelFactory(editID,repository)
         }
 
-        val tempDB = AlarmTemp()
+        val tempDB =  AlarmTemp()
 
         setContent {
             ContrastAwareReplyTheme{
@@ -228,13 +228,20 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
             alarmById?.let { alarm ->
                 temp.hour.value = alarm.timeHour
                 temp.minute.value = alarm.timeMinute
-                temp.text.value = alarmById.name
+                temp.text.value = alarm.name
                 temp.autoEnabled.value = alarm.autoWeek
                 temp.remindTimes.value = alarm.remindTime
                 temp.remindMinutes.value = alarm.remindMinute
                 temp.remindEnabled.value = alarm.remind
+                println("DEBUG AlarmData values:")
+                println("  id: ${alarm.id}")
+                println("  timeHour: ${alarm.timeHour}, timeMinute: ${alarm.timeMinute}")
+                println("  name: ${alarm.name}")
             }
         }
+        println("DEBUG AlarmTemp values:")
+        println("  hour: ${temp.hour.value}, minute: ${temp.minute.value}")
+        println("  text: ${temp.text.value}")
     }
 
     Card(
@@ -260,8 +267,6 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
             .padding(vertical = 15.dp)
     ){
         val currentTime = Calendar.getInstance()
-        Text("Debug A ${alarmById?.timeMinute}")
-        Text("Debug T ${temp.minute.value}")
         val defHour = if(isEdit) temp.hour.value else currentTime.get(Calendar.HOUR_OF_DAY)
         val defMinute = if(isEdit) temp.minute.value else currentTime.get(Calendar.MINUTE)
 
@@ -270,6 +275,11 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
             initialMinute = defMinute,
             is24Hour = true
         )
+        LaunchedEffect(temp.hour.value, temp.minute.value) {
+            timePickerState.hour = temp.hour.value
+            timePickerState.minute = temp.minute.value
+        }
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -279,9 +289,11 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
             TimeInput(
                 state = timePickerState,
             )
-            temp.hour.value = timePickerState.hour
-            temp.minute.value = timePickerState.minute
+            //temp.hour.value = timePickerState.hour
+            //temp.minute.value = timePickerState.minute
         }
+        println("DEBUG ui-timePickerState values:")
+        println("   initialHour: ${timePickerState.hour}, initialMinute: ${timePickerState.minute}")
     }
 
     HorizontalDivider(
