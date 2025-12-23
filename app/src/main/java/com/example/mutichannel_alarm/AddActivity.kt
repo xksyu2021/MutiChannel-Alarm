@@ -86,29 +86,16 @@ class AddActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, context: Context? = null, temp :AlarmTemp,alarmViewModel: AlarmViewModel,){
+fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, context: Context? = null, temp :AlarmTemp,alarmViewModel: AlarmViewModel){
     var showCheck by remember { mutableStateOf(false) }
     var showDelCheck by remember { mutableStateOf(false) }
 
-    var dataLoaded by remember { mutableStateOf(!isEdit) }
-    if (isEdit && !dataLoaded) {
-        val alarmById by alarmViewModel.alarmById.collectAsState()
-        LaunchedEffect(alarmById) {
-            alarmById?.let { alarm ->
-                temp.text.value = alarm.name
-                temp.autoEnabled.value = alarm.autoWeek
-                temp.remindTimes.value = alarm.remindTime
-                temp.remindMinutes.value = alarm.remindMinute
-                temp.remindEnabled.value = alarm.remind
-                temp.hour.value = alarm.timeHour
-                temp.minute.value = alarm.timeMinute
-            }
-        }
-        dataLoaded = true
-    }
+    val alarmById by alarmViewModel.alarmById.collectAsState()
+
     BackHandler(enabled = true) {
         showCheck = true
     }
+
     if (showCheck) {
         AlertDialog(
             onDismissRequest = { },
@@ -214,7 +201,7 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
                 .padding(innerPadding)
                 .padding(top = 25.dp)
         ) {
-            addConfigList(temp = temp)
+            addConfigList(temp = temp,isEdit = isEdit, alarmById = alarmById)
             val focusManager = LocalFocusManager.current
             LaunchedEffect(Unit) {
                 focusManager.clearFocus()
@@ -232,9 +219,23 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun addConfigList(temp :AlarmTemp){
+fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
     val autoWeekName = arrayOf("weekdays","weekends")
+
+    if (isEdit) {
+        LaunchedEffect(alarmById) {
+            alarmById?.let { alarm ->
+                temp.hour.value = alarm.timeHour
+                temp.minute.value = alarm.timeMinute
+                temp.text.value = alarmById.name
+                temp.autoEnabled.value = alarm.autoWeek
+                temp.remindTimes.value = alarm.remindTime
+                temp.remindMinutes.value = alarm.remindMinute
+                temp.remindEnabled.value = alarm.remind
+            }
+        }
+    }
 
     Card(
         modifier = Modifier
@@ -259,10 +260,15 @@ fun addConfigList(temp :AlarmTemp){
             .padding(vertical = 15.dp)
     ){
         val currentTime = Calendar.getInstance()
+        Text("Debug A ${alarmById?.timeMinute}")
+        Text("Debug T ${temp.minute.value}")
+        val defHour = if(isEdit) temp.hour.value else currentTime.get(Calendar.HOUR_OF_DAY)
+        val defMinute = if(isEdit) temp.minute.value else currentTime.get(Calendar.MINUTE)
+
         val timePickerState = rememberTimePickerState(
-            initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-            initialMinute = currentTime.get(Calendar.MINUTE),
-            is24Hour = true,
+            initialHour = defHour,
+            initialMinute = defMinute,
+            is24Hour = true
         )
         Box(
             contentAlignment = Alignment.Center,
@@ -360,7 +366,7 @@ fun addConfigList(temp :AlarmTemp){
                 Text(stringResource(R.string.addPage_diy_ringtone),
                     style = MaterialTheme.typography.titleLarge
                 )
-                Text("${temp.ringtone.value}")
+                Text(temp.ringtone.value)
             }
         }
     }
