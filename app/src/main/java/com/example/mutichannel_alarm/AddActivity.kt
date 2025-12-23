@@ -1,6 +1,7 @@
 package com.example.mutichannel_alarm
 
 import android.content.Context
+import android.inputmethodservice.Keyboard
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -38,18 +39,22 @@ import androidx.compose.ui.graphics.Color
 import java.util.Calendar
 import androidx.activity.compose.BackHandler
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
 import kotlinx.coroutines.flow.SharingStarted
 import kotlin.String
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.room.util.copy
 
 class AddActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isEdit = intent.getBooleanExtra("IS_EDIT", false)
@@ -61,11 +66,11 @@ class AddActivity : ComponentActivity() {
         }
 
         val tempDB =  AlarmTemp()
-
         setContent {
             ContrastAwareReplyTheme{
                 AddPage(onBack = {
                         finish()
+                        println("----------------EXIT without save----------------")
                     },
                     onSave = {
                         if(isEdit){
@@ -223,6 +228,12 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
     val autoWeekName = arrayOf("weekdays","weekends")
 
+    if(isEdit){
+        println("----------------EDIT mode----------------")
+    }else{
+        println("----------------CREATE mode----------------")
+    }
+
     if (isEdit) {
         LaunchedEffect(alarmById) {
             alarmById?.let { alarm ->
@@ -233,6 +244,15 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
                 temp.remindTimes.value = alarm.remindTime
                 temp.remindMinutes.value = alarm.remindMinute
                 temp.remindEnabled.value = alarm.remind
+                if(temp.autoEnabled.value){
+                    for(code in 0..1){
+                        if((alarm.weekSelect and (0b1 shl code))!=0) temp.autoDays[code] = true
+                    }
+                }else{
+                    for(code in 0..6){
+                        if((alarm.weekSelect and (0b1 shl code))!=0) temp.days[code] = true
+                    }
+                }
                 println("DEBUG AlarmData values:")
                 println("  id: ${alarm.id}")
                 println("  timeHour: ${alarm.timeHour}, timeMinute: ${alarm.timeMinute}")
@@ -289,11 +309,9 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
             TimeInput(
                 state = timePickerState,
             )
-            //temp.hour.value = timePickerState.hour
-            //temp.minute.value = timePickerState.minute
+            temp.hourGet.value = timePickerState.hour
+            temp.minuteGet.value = timePickerState.minute
         }
-        println("DEBUG ui-timePickerState values:")
-        println("   initialHour: ${timePickerState.hour}, initialMinute: ${timePickerState.minute}")
     }
 
     HorizontalDivider(
@@ -517,7 +535,8 @@ fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>)
     )
 }
 
-fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context) : Boolean {
+@OptIn(ExperimentalMaterial3Api::class)
+fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context) : Boolean {
     var weekSelectTemp = 0b0
     if (temp.autoEnabled.value) {
         for (code in 0..1) {
@@ -538,8 +557,8 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context) : B
     }
     val db = AlarmData(
         name = temp.text.value,
-        timeHour = temp.hour.value,
-        timeMinute = temp.minute.value,
+        timeHour = temp.hourGet.value,
+        timeMinute = temp.minuteGet.value,
         autoWeek = temp.autoEnabled.value,
         remind = temp.remindEnabled.value,
         remindTime = temp.remindTimes.value,
@@ -548,10 +567,13 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context) : B
     )
     alarmViewModel.insert(db)
     alarmViewModel.update(db)
+    setAlarm(db,context)
+    println("----------------SAVE----------------")
     //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
     return true
 }
-fun onSaveEdit(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context) : Boolean {
+@OptIn(ExperimentalMaterial3Api::class)
+fun onSaveEdit(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context) : Boolean {
     var weekSelectTemp = 0b0
     if (temp.autoEnabled.value) {
         for (code in 0..1) {
@@ -573,8 +595,8 @@ fun onSaveEdit(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context)
     alarmViewModel.alarmById.value?.let { alarm ->
         with(alarm) {
             name = temp.text.value
-            timeHour = temp.hour.value
-            timeMinute = temp.minute.value
+            timeHour = temp.hourGet.value
+            timeMinute = temp.minuteGet.value
             autoWeek = temp.autoEnabled.value
             remindTime = temp.remindTimes.value
             remindMinute = temp.remindMinutes.value
@@ -583,6 +605,7 @@ fun onSaveEdit(temp :AlarmTemp, alarmViewModel: AlarmViewModel,context: Context)
         }
     }
     alarmViewModel.update(alarmViewModel.alarmById.value)
+    println("----------------SAVE----------------")
     //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
     return true
 }

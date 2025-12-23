@@ -15,5 +15,7 @@ data class AlarmTemp(
     val remindEnabled: MutableState<Boolean> = mutableStateOf(true),
     val ringtone: MutableState<String> = mutableStateOf("default"),
     val hour: MutableState<Int> = mutableStateOf(0),
-    val minute: MutableState<Int> = mutableStateOf(0)
+    val minute: MutableState<Int> = mutableStateOf(0),
+    val hourGet: MutableState<Int> = mutableStateOf(0),
+    val minuteGet: MutableState<Int> = mutableStateOf(0)
 )
