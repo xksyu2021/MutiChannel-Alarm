@@ -15,6 +15,7 @@ class AlarmReceiver : BroadcastReceiver() {
         when(intent.action){
             "ACTION_ALARM_GET" -> {
                 val alarmId = intent.getIntExtra("ALARM_ID", -1)
+                println("DEBUG ALARM_ID in AlarmReceiver = $alarmId")
                 val intentGet = Intent(context, AlarmGet::class.java).apply {
                     putExtra("ALARM_ID", alarmId)
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK and Intent.FLAG_ACTIVITY_NEW_TASK
@@ -30,6 +31,7 @@ class AlarmReceiver : BroadcastReceiver() {
 }
 
 fun setAlarm(alarm: AlarmData,context: Context) {
+    println("----------------setAlarm---------------")
     val time = Calendar.getInstance().apply {
         set(Calendar.HOUR_OF_DAY, alarm.timeHour)
         set(Calendar.MINUTE, alarm.timeMinute)
@@ -39,7 +41,10 @@ fun setAlarm(alarm: AlarmData,context: Context) {
             add(Calendar.DATE, 1)
         }
     }
-
+    println("DEBUG AlarmData values:")
+    println("  id: ${alarm.id}")
+    println("  timeHour: ${alarm.timeHour}, timeMinute: ${alarm.timeMinute}")
+    println("  name: ${alarm.name}")
     val alarmIntent = Intent(context, AlarmReceiver::class.java).apply {
         action = "ACTION_ALARM_GET"
         putExtra("ALARM_ID", alarm.id)

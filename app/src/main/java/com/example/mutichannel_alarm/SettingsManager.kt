@@ -8,9 +8,13 @@ class SettingsManager(private val context: Context?) {
         private const val PREFS_NAME = "channel_settings"
         private const val CHAN_VIB = "vibrate"
         private const val CHAN_MODE = "mode"
+        private const val ID = "id"
+        private const val IS_FIRST = "first_use"
     }
     private var previewMode: Int = 1
     private var previewVib: Boolean = false
+    private var previewID : Int = -1
+    private var previewFirst: Boolean = false
 
     private val sharedPref: SharedPreferences? =
         context?.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -40,6 +44,26 @@ class SettingsManager(private val context: Context?) {
             sharedPref?.getInt(CHAN_MODE, 1) ?: 1
         } else {
             previewMode
+        }
+    }
+
+    fun updateId() : Int{
+        if (context != null) {
+            var idTemp = sharedPref?.getInt(ID, 0) ?: -2
+            idTemp++
+            if(idTemp!=-1)sharedPref?.edit()?.putInt(ID, idTemp)?.apply()
+            return idTemp
+        } else {
+            return previewID
+        }
+    }
+    fun isFirst() : Boolean{
+        if (context != null) {
+            val isFirst = sharedPref?.getBoolean(IS_FIRST, true) ?: true
+            if(isFirst) sharedPref?.edit()?.putBoolean(IS_FIRST,  false)?.apply()
+            return isFirst
+        } else {
+            return previewFirst
         }
     }
 }

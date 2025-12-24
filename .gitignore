@@ -14,3 +14,5 @@
 .cxx
 local.properties
 /.kotlin/errors/errors-1765436835885.log
+/app/debug/app-debug.apk
+/app/debug/output-metadata.json

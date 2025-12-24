@@ -60,12 +60,13 @@ import com.example.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 import java.util.Calendar
 
 class AddActivity : ComponentActivity() {
+    private lateinit var settingsManager: SettingsManager
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isEdit = intent.getBooleanExtra("IS_EDIT", false)
         val editID = intent.getIntExtra("ALARM_ID", -1)
-
+        settingsManager = SettingsManager(this)
         val alarmViewModel: AlarmViewModel by viewModels {
             val repository = (application as MCApplication).repository
             AlarmViewModelFactory(editID,repository)
@@ -82,7 +83,7 @@ class AddActivity : ComponentActivity() {
                         if(isEdit){
                             if(onSaveEdit(tempDB,alarmViewModel,this)) { finish() }
                         }else{
-                            if(onSave(tempDB,alarmViewModel,this)) { finish() }
+                            if(onSave(tempDB,alarmViewModel,this,settingsManager)) { finish() }
                         }
                     },
                     isEdit = isEdit,
@@ -297,7 +298,7 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
         ){
             val currentTime = Calendar.getInstance()
             val defHour = if(isEdit) temp.hour.value else currentTime.get(Calendar.HOUR_OF_DAY)
-            val defMinute = if(isEdit) temp.minute.value else currentTime.get(Calendar.MINUTE)
+            val defMinute = if(isEdit) temp.minute.value else currentTime.get(Calendar.MINUTE)+1
 
             val timePickerState = rememberTimePickerState(
                 initialHour = defHour,
@@ -558,7 +559,7 @@ fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context) : Boolean {
+fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context,settingsManager: SettingsManager) : Boolean {
     var weekSelectTemp = 0b0
     if (temp.autoEnabled.value) {
         for (code in 0..1) {
@@ -578,6 +579,7 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context) : 
         return false
     }
     val db = AlarmData(
+        id = settingsManager.updateId(),
         name = temp.text.value,
         timeHour = temp.hourGet.value,
         timeMinute = temp.minuteGet.value,
@@ -588,9 +590,13 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context) : 
         weekSelect = weekSelectTemp
     )
     alarmViewModel.insert(db)
-    alarmViewModel.update(db)
-    setAlarm(db,context)
+    println("DEBUG AlarmData values:")
+    println("  id: ${db.id}")
+    println("  timeHour: ${db.timeHour}, timeMinute: ${db.timeMinute}")
+    println("  name: ${db.name}")
     println("----------------SAVE----------------")
+
+    setAlarm(db,context)
     //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
     return true
 }
@@ -625,6 +631,10 @@ fun onSaveEdit(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context
             remind = temp.remindEnabled.value
             weekSelect = weekSelectTemp
         }
+        println("DEBUG AlarmData values:")
+        println("  id: ${alarm.id}")
+        println("  timeHour: ${alarm.timeHour}, timeMinute: ${alarm.timeMinute}")
+        println("  name: ${alarm.name}")
     }
     alarmViewModel.update(alarmViewModel.alarmById.value)
     println("----------------SAVE----------------")
