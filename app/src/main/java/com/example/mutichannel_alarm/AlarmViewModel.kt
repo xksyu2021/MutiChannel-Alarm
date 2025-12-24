@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class AlarmViewModel(private val id: Long = 0 , private val repository: AlarmRepository) : ViewModel() {
+class AlarmViewModel(private val id: Int = 0 , private val repository: AlarmRepository) : ViewModel() {
     fun insert(data :AlarmData) {
         viewModelScope.launch {
             repository.insertAlarm(data)
@@ -46,7 +46,7 @@ class AlarmViewModel(private val id: Long = 0 , private val repository: AlarmRep
     }
 }
 
-class AlarmViewModelFactory(private val id:Long = 0,private val repository: AlarmRepository) : ViewModelProvider.Factory {
+class AlarmViewModelFactory(private val id:Int = 0,private val repository: AlarmRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AlarmViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

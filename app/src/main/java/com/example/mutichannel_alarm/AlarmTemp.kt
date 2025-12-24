@@ -2,8 +2,8 @@ package com.example.mutichannel_alarm
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 data class AlarmTemp(
     val text: MutableState<String> = mutableStateOf("default"),

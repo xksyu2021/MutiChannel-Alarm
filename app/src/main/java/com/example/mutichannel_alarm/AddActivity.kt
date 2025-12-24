@@ -1,11 +1,12 @@
 package com.example.mutichannel_alarm
 
 import android.content.Context
-import android.inputmethodservice.Keyboard
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,46 +20,51 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.example.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.graphics.Color
-import java.util.Calendar
-import androidx.activity.compose.BackHandler
-import androidx.activity.viewModels
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextRange
-import kotlinx.coroutines.flow.SharingStarted
-import kotlin.String
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.room.util.copy
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.example.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
+import java.util.Calendar
 
 class AddActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isEdit = intent.getBooleanExtra("IS_EDIT", false)
-        val editID = intent.getLongExtra("ALARM_ID", -1)
+        val editID = intent.getIntExtra("ALARM_ID", -1)
 
         val alarmViewModel: AlarmViewModel by viewModels {
             val repository = (application as MCApplication).repository
@@ -80,7 +86,6 @@ class AddActivity : ComponentActivity() {
                         }
                     },
                     isEdit = isEdit,
-                    context = this,
                     temp = tempDB,
                     alarmViewModel = alarmViewModel,
                 )
@@ -96,7 +101,7 @@ class AddActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, context: Context? = null, temp :AlarmTemp,alarmViewModel: AlarmViewModel){
+fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, temp :AlarmTemp,alarmViewModel: AlarmViewModel){
     var showCheck by remember { mutableStateOf(false) }
     var showDelCheck by remember { mutableStateOf(false) }
 

@@ -15,7 +15,7 @@ interface AlarmDataDao {
     @Update
     suspend fun updateAlarm(vararg data: AlarmData?)
     @Query("SELECT * FROM AlarmData WHERE id = :id")
-    suspend fun getById(id: Long) : AlarmData?
+    suspend fun getById(id: Int) : AlarmData?
     @Query("SELECT * FROM AlarmData")
     fun getAll(): Flow<List<AlarmData>>
 }

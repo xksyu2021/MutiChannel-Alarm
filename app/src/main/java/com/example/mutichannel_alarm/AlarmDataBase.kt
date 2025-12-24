@@ -2,10 +2,10 @@ package com.example.mutichannel_alarm
 
 import android.content.Context
 import androidx.room.Database
-import androidx.room.RoomDatabase
 import androidx.room.Room
+import androidx.room.RoomDatabase
 
-@Database(entities = [AlarmData::class], version = 3)
+@Database(entities = [AlarmData::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun AlarmDataDao(): AlarmDataDao
     companion object {

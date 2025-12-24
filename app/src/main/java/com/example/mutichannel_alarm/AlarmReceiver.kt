@@ -1,13 +1,13 @@
 package com.example.mutichannel_alarm
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.AlarmManager.AlarmClockInfo
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import java.util.Calendar
-import android.app.AlarmManager
-import android.app.AlarmManager.AlarmClockInfo
-import android.app.PendingIntent
 
 class AlarmReceiver : BroadcastReceiver() {
     @SuppressLint("ServiceCast")
@@ -46,7 +46,7 @@ fun setAlarm(alarm: AlarmData,context: Context) {
     }
     val alarmPendingIntent = PendingIntent.getBroadcast(
         context,
-        alarm.id.toInt(),
+        alarm.id,
         alarmIntent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
@@ -57,7 +57,7 @@ fun setAlarm(alarm: AlarmData,context: Context) {
     }
     val showPendingIntent = PendingIntent.getActivity(
         context,
-        alarm.id.toInt()+10000,
+        alarm.id+10000,
         showIntent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )

@@ -11,7 +11,7 @@ class AlarmRepository(private val alarmDao: AlarmDataDao) {
     suspend fun updateAlarm(data: AlarmData?) {
         alarmDao.updateAlarm(data)
     }
-    suspend fun getById(id: Long): AlarmData? {
+    suspend fun getById(id: Int): AlarmData? {
         return alarmDao.getById(id)
     }
     val alarms: Flow<List<AlarmData>> = alarmDao.getAll()
