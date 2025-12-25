@@ -1,4 +1,4 @@
-package com.example.mutichannel_alarm
+package com.xksyu.mutichannel_alarm
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -57,7 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
+import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 
 //android main
 class MainActivity : ComponentActivity() {

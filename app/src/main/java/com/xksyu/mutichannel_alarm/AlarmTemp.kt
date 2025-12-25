@@ -1,4 +1,4 @@
-package com.example.mutichannel_alarm
+package com.xksyu.mutichannel_alarm
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf

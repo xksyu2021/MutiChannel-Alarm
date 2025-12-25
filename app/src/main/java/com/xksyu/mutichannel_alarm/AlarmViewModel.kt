@@ -1,4 +1,4 @@
-package com.example.mutichannel_alarm
+package com.xksyu.mutichannel_alarm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

@@ -1,4 +1,4 @@
-package com.example.mutichannel_alarm
+package com.xksyu.mutichannel_alarm
 
 import android.annotation.SuppressLint
 import android.app.AlarmManager
@@ -7,12 +7,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.activity.viewModels
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import java.util.Calendar
-import kotlin.getValue
 
 class AlarmReceiver : BroadcastReceiver() {
     @SuppressLint("ServiceCast")

@@ -1,4 +1,4 @@
-package com.example.mutichannel_alarm.ui.theme
+package com.xksyu.mutichannel_alarm.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

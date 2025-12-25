@@ -1,4 +1,4 @@
-package com.example.mutichannel_alarm
+package com.xksyu.mutichannel_alarm
 import kotlinx.coroutines.flow.Flow
 
 class AlarmRepository(private val alarmDao: AlarmDataDao) {

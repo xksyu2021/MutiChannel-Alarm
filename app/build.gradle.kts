@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.mutichannel_alarm"
+    namespace = "com.xksyu.mutichannel_alarm"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.mutichannel_alarm"
+        applicationId = "com.xksyu.mutichannel_alarm"
         minSdk = 29
         targetSdk = 36
         versionCode = 8
