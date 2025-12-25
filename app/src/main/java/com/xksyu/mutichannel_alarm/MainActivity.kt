@@ -231,6 +231,7 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             for(alarm in alarms){
+                if(alarm.isRepeat) continue
                 var open by remember { mutableStateOf(alarm.isOpen) }
                 var weekSelect = ""
                 when(alarm.autoWeek){
@@ -303,6 +304,13 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
                             onCheckedChange = {
                                 alarm.isOpen = !alarm.isOpen
                                 open = !open
+                                context?.let {
+                                    if (open){
+                                        setAlarm(alarm, it)
+                                    }else {
+                                        cancelAlarm(alarm, it)
+                                    }
+                                }
                                 alarmViewModel.update(alarm)
                             }
                         )
@@ -332,6 +340,7 @@ fun channelPage(settingsManager : SettingsManager){
             1 -> stringResource(R.string.page2_modeTitle_pm)
             2 -> stringResource(R.string.page2_modeTitle_head)
             3 -> stringResource(R.string.page2_modeTitle_sys)
+            4 -> stringResource(R.string.page2_modeTitle_sm)
             else -> "Null"
         }
         Text(stringResource(R.string.page2_modeTitle_current, selectText))

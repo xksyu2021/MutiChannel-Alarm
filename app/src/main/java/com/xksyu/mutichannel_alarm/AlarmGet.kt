@@ -27,9 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
+import android.os.Handler
+import android.os.Looper
+import androidx.activity.compose.BackHandler
+import java.lang.Runnable
 
 class AlarmGet : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
+    private val handler = Handler(Looper.getMainLooper())
+    private var idleRunnable: Runnable? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val id = intent.getIntExtra("ALARM_ID",-1)
@@ -41,10 +48,30 @@ class AlarmGet : ComponentActivity() {
             AlarmViewModelFactory(id,repository)
         }
 
+        idleRunnable = Runnable {
+            val alarmRepeat = alarmViewModel.alarmById.value?.copy(
+                id = settingsManager.updateId(),
+                isRepeat = true, autoWeek = 0
+            )
+            alarmRepeat?.let {
+                if (it.remindTime > 0) {
+                    setAlarm(it, this)
+                }
+                it.remindTime -= 1
+            }
+            alarmViewModel.update(alarmRepeat)
+            idleRunnable?.let { handler.removeCallbacks(it) }
+            finish()
+        }
+        handler.postDelayed(idleRunnable!!, 60 * 1000L)
+
         setContent {
             ContrastAwareReplyTheme{
                 alarmGetPage(alarmViewModel = alarmViewModel,
-                    onFinish = {finish()},
+                    onFinish = {
+                        idleRunnable?.let { handler.removeCallbacks(it) }
+                        finish()
+                    },
                     settingsManager = settingsManager,
                     context = this
                 )
@@ -59,7 +86,7 @@ fun alarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settin
     val temp = AlarmTemp()
     val alarmById by alarmViewModel.alarmById.collectAsState()
     var updateStatu by remember { mutableStateOf(false) }
-
+    BackHandler(enabled = true){}
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -114,7 +141,14 @@ fun alarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settin
 
             Spacer(Modifier.padding(vertical = 100.dp))
             Button(onClick = {
-
+                alarmById?.let{
+                    val repeatAlarm = it.copy(
+                        id = settingsManager.updateId(),
+                        isRepeat = true, autoWeek = 0
+                    )
+                    setAlarm(repeatAlarm,context)
+                    alarmViewModel.update(repeatAlarm)
+                }
                 onFinish()
             }) {
                 Text(text="Ring again",

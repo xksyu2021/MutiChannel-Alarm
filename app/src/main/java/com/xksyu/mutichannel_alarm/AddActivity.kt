@@ -1,5 +1,6 @@
 package com.xksyu.mutichannel_alarm
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -88,6 +89,7 @@ class AddActivity : ComponentActivity() {
                     isEdit = isEdit,
                     temp = tempDB,
                     alarmViewModel = alarmViewModel,
+                    context = this
                 )
                 if(isEdit){
                     println("----------------EDIT mode----------------")
@@ -101,7 +103,7 @@ class AddActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, temp :AlarmTemp,alarmViewModel: AlarmViewModel){
+fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean = false, temp :AlarmTemp,alarmViewModel: AlarmViewModel,context : Context?){
     var showCheck by remember { mutableStateOf(false) }
     var showDelCheck by remember { mutableStateOf(false) }
 
@@ -153,6 +155,9 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
             dismissButton = {
                 Button(onClick = {
                         showDelCheck = false
+                        context?.let {  con->
+                            alarmViewModel.alarmById.value?.let { alarm -> cancelAlarm(alarm,con) }
+                        }
                         alarmViewModel.delete(alarmViewModel.alarmById.value)
                         onBack()
                     }

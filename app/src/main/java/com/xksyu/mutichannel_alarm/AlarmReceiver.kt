@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.compose.material3.CenterAlignedTopAppBar
 import java.util.Calendar
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -99,7 +100,15 @@ fun setAlarm(alarm: AlarmData,context: Context) {
                 set(Calendar.MINUTE, alarm.timeMinute)
                 set(Calendar.SECOND, 0)
                 set(Calendar.MILLISECOND, 0)
-                if (timeInMillis <= System.currentTimeMillis()){
+                if(alarm.isRepeat){
+                    add(Calendar.MINUTE,alarm.remindMinute)
+                    alarm.timeMinute += alarm.remindMinute
+                    if (alarm.timeMinute>=60){
+                        alarm.timeMinute -= 60
+                        alarm.timeHour += 1
+                        if (alarm.timeHour>=24) alarm.timeHour-=24
+                    }
+                }else if (timeInMillis <= System.currentTimeMillis()){
                     add(Calendar.DATE,7)
                 }
             }
@@ -139,4 +148,23 @@ fun setAlarm(alarm: AlarmData,context: Context) {
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     val alarmClockInfo = AlarmClockInfo(time.timeInMillis,showPendingIntent)
     alarmManager.setAlarmClock(alarmClockInfo,alarmPendingIntent)
+}
+
+fun cancelAlarm(alarm: AlarmData,context: Context){
+    println("====== Call cancelAlarm BEGIN ======")
+    val alarmIntent = Intent(context, AlarmReceiver::class.java).apply {
+        action = "ACTION_ALARM_GET"
+        putExtra("ALARM_ID", alarm.id)
+    }
+    val alarmPendingIntent = PendingIntent.getBroadcast(
+        context,
+        alarm.id,
+        alarmIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    alarmManager.cancel(alarmPendingIntent)
+    alarmPendingIntent.cancel()
+    println("====== Call cancelAlarm FINISHED ======")
 }

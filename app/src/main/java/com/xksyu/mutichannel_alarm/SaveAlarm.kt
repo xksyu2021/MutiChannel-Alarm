@@ -80,8 +80,10 @@ fun onSaveEdit(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context
         println("  id: ${alarm.id}")
         println("  timeHour: ${alarm.timeHour}, timeMinute: ${alarm.timeMinute}")
         println("  name: ${alarm.name}")
+
+        alarmViewModel.update(alarmViewModel.alarmById.value)
+        setAlarm(alarm,context)
     }
-    alarmViewModel.update(alarmViewModel.alarmById.value)
     println("----------------SAVE----------------")
     //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
     return true
