@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MutiChannel-Alarm</string>
+    <string name="app_name" translatable="false">MutiChannel-Alarm</string>
     <string name="menuHead">Menu</string>
     <string name="menuList_setting">Settings</string>
     <string name="menuList_about">About</string>
@@ -16,7 +16,7 @@
     <string name="page2_modeDescribe_pm">When headphones are connected, the ringtone will only be played through the headphones. \nIf the headphones are disconnected, it will be played through the speaker.</string>
     <string name="page2_modeDescribe_head">The ringtone is played exclusively through the headphones. If the headphones are disconnected, no ringtone will be played.</string>
     <string name="page2_modeDescribe_sys">The way to play the ringtone is decided by your phone system.In most cases,it means speaker-only output.</string>
-    <string name="pageAbout_by">by wxp (xksyu2021)</string>
+    <string name="pageAbout_by" translatable="false">by wxp (xksyu2021)</string>
     <string name="backHead">Back</string>
     <string name="pageAbout_link_code">Code</string>
     <string name="pageAbout_link_update">Update</string>
@@ -43,5 +43,5 @@
     <string name="addPage_diy_repeat">Ring repeat dates</string>
     <string name="page2_modeTitle_sm">Silent Mode</string>
     <string name="page2_modeDescribe_sm">The alarm will not ring. It only pop up a page on your phone. The vibration setting will be still kept as what you set.</string>
-    <string name="page2_vibrate">Vibrate when ringing</string>
+    <string name="page2_vibrate">Vibrate</string>
 </resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="addPage_diy_remind_2">分钟</string>
+    <string name="addPage_diy_once">仅一次</string>
+    <string name="addPage_diy_customize">自定义</string>
+    <string name="addPage_diy_auto">自动选择</string>
+    <string name="addPage_diy_every">每日</string>
+    <string name="pageAdd_delCheck_text">该闹钟将被删除。</string>
+    <string name="pageAdd_delCheck_delete">删除</string>
+    <string name="addPage_diy_ringtone">铃声</string>
+    <string name="addPage_diy_remind">再响</string>
+    <string name="addPage_diy_remind_1">次</string>
+    <string name="addPage_diy_repeat">周期设置</string>
+    <string name="backHead">返回</string>
+    <string name="title_mainPage">"  闹钟"</string>
+    <string name="title_aboutPage">"  关于"</string>
+    <string name="page1_addLogo">添加一个闹钟</string>
+    <string name="bar_alarm">闹钟</string>
+    <string name="bar_channel">音频通道</string>
+    <string name="title_add">新建</string>
+    <string name="confirmHead">确定</string>
+    <string name="menuHead">菜单</string>
+    <string name="menuList_setting">设置</string>
+    <string name="menuList_about">关于</string>
+    <string name="menuList_activate">激活</string>
+    <string name="pageAbout_link_update">更新</string>
+    <string name="page1_empty">无闹钟</string>
+    <string name="page2_modeTitle_sys">系统自动选择</string>
+    <string name="page2_modeTitle_current">当前设置：%1$s</string>
+    <string name="page2_modeTitle_pm">优先级模式</string>
+    <string name="page2_modeTitle_head">仅耳机输出</string>
+    <string name="page2_modeTitle_sm">静音</string>
+    <string name="page2_modeDescribe_sm">静音模式。到达设定的时间后，只会在您的手机上弹出一个页面。震动设置不受此影响。</string>
+    <string name="page2_vibrate">震动</string>
+    <string name="pageAbout_link_code">源码</string>
+    <string name="pageAdd_check_stay">继续编辑</string>
+    <string name="pageAdd_check_back">退出</string>
+    <string name="pageAdd_check_new">如果您点击“退出”，这个闹钟将不会被保存。</string>
+    <string name="pageAdd_check_title">是否退出？</string>
+    <string name="pageAdd_delCheck_title">删除该闹钟</string>
+    <string name="title_edit">编辑</string>
+    <string name="pageAdd_check_edit">如果您点击“退出”，所有改动不会被记录。</string>
+    <string name="page2_modeDescribe_pm">若存在耳机连接，将仅通过耳机播放铃声。若耳机断连将通过扬声器外放。</string>
+    <string name="page2_modeDescribe_head">仅通过耳机播放闹钟铃声，耳机断连则静音通知。</string>
+    <string name="page2_modeDescribe_sys">由系统决定振铃的音频通道。大多数情况下，这代表外放铃声。</string>
+</resources>

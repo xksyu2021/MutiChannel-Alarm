@@ -208,7 +208,6 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
     val alarms by remember { alarmViewModel.alarms }.collectAsState(initial = emptyList())
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
     val autoWeekName = arrayOf("weekdays","weekends")
-
     if(alarms.isEmpty()){
         Column(
             modifier = Modifier
@@ -230,22 +229,24 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            for(alarm in alarms){
-                if(alarm.isRepeat) continue
+            for(alarm in alarms) {
+                if (alarm.isRepeat) continue
                 var open by remember { mutableStateOf(alarm.isOpen) }
                 var weekSelect = ""
-                when(alarm.autoWeek){
+                when (alarm.autoWeek) {
                     3 -> weekSelect = weekSelect.plus(stringResource(R.string.addPage_diy_every))
                     2 -> for (code in 0..1) {
-                        if(alarm.weekSelect and (0b1 shl code) != 0){
+                        if (alarm.weekSelect and (0b1 shl code) != 0) {
                             weekSelect = weekSelect.plus(autoWeekName[code]).plus("  ")
                         }
                     }
+
                     1 -> for (code in 0..6) {
-                        if(alarm.weekSelect and (0b1 shl code) != 0){
+                        if (alarm.weekSelect and (0b1 shl code) != 0) {
                             weekSelect = weekSelect.plus(weekName[code]).plus("  ")
                         }
                     }
+
                     else -> weekSelect = weekSelect.plus(stringResource(R.string.addPage_diy_once))
                 }
 
@@ -263,7 +264,7 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Column(
                             modifier = Modifier
                                 .padding(10.dp)
@@ -305,9 +306,9 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
                                 alarm.isOpen = !alarm.isOpen
                                 open = !open
                                 context?.let {
-                                    if (open){
+                                    if (open) {
                                         setAlarm(alarm, it)
-                                    }else {
+                                    } else {
                                         cancelAlarm(alarm, it)
                                     }
                                 }
