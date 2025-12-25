@@ -1,6 +1,7 @@
 package com.example.mutichannel_alarm
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,9 +29,11 @@ import androidx.compose.ui.unit.dp
 import com.example.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 
 class AlarmGet : ComponentActivity() {
+    private lateinit var settingsManager: SettingsManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val id = intent.getIntExtra("ALARM_ID",-1)
+        settingsManager = SettingsManager(this)
         println("----------------AlarmGet---------------")
         println("DEBUG ALARM_ID in AlarmGetPage = $id")
         val alarmViewModel: AlarmViewModel by viewModels {
@@ -40,7 +43,11 @@ class AlarmGet : ComponentActivity() {
 
         setContent {
             ContrastAwareReplyTheme{
-                alarmGetPage(alarmViewModel)
+                alarmGetPage(alarmViewModel = alarmViewModel,
+                    onFinish = {finish()},
+                    settingsManager = settingsManager,
+                    context = this
+                )
             }
         }
     }
@@ -48,7 +55,7 @@ class AlarmGet : ComponentActivity() {
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun alarmGetPage(alarmViewModel: AlarmViewModel){
+fun alarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settingsManager: SettingsManager,context: Context){
     val temp = AlarmTemp()
     val alarmById by alarmViewModel.alarmById.collectAsState()
     var updateStatu by remember { mutableStateOf(false) }
@@ -70,6 +77,11 @@ fun alarmGetPage(alarmViewModel: AlarmViewModel){
                     temp.text.value = it.name
                     temp.hour.value = it.timeHour
                     temp.minute.value = it.timeMinute
+
+                    println("====== Call setAlarm for next day BEGIN ======")
+                    if(!it.isRepeat && it.autoWeek!=0) setAlarm(it, context)
+                    println("====== Call setAlarm for next day FINISHED ======")
+
                     println("****** GetValue Count ******")
                 }
                 updateStatu = true
@@ -103,6 +115,7 @@ fun alarmGetPage(alarmViewModel: AlarmViewModel){
             Spacer(Modifier.padding(vertical = 100.dp))
             Button(onClick = {
 
+                onFinish()
             }) {
                 Text(text="Ring again",
                     style = MaterialTheme.typography.headlineMedium
@@ -110,7 +123,7 @@ fun alarmGetPage(alarmViewModel: AlarmViewModel){
             }
             Spacer(Modifier.padding(vertical = 40.dp))
             OutlinedButton(onClick = {
-
+                onFinish()
             }) {
                 Text(text="Stop",
                     style = MaterialTheme.typography.headlineMedium

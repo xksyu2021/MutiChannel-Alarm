@@ -234,6 +234,7 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
                 var open by remember { mutableStateOf(alarm.isOpen) }
                 var weekSelect = ""
                 when(alarm.autoWeek){
+                    3 -> weekSelect = weekSelect.plus(stringResource(R.string.addPage_diy_every))
                     2 -> for (code in 0..1) {
                         if(alarm.weekSelect and (0b1 shl code) != 0){
                             weekSelect = weekSelect.plus(autoWeekName[code]).plus("  ")
@@ -244,7 +245,7 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
                             weekSelect = weekSelect.plus(weekName[code]).plus("  ")
                         }
                     }
-                    else -> weekSelect = weekSelect.plus(stringResource(R.string.addPage_once))
+                    else -> weekSelect = weekSelect.plus(stringResource(R.string.addPage_diy_once))
                 }
 
                 Card(
