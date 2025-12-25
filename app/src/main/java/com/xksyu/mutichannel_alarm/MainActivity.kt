@@ -363,7 +363,7 @@ fun channelPage(settingsManager : SettingsManager){
                     settingsManager.saveChanVib(it)
                 }
             )
-            Text("Vibrate when ringing")
+            Text(stringResource(R.string.page2_vibrate))
         }
 
         //1

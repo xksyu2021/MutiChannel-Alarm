@@ -61,6 +61,9 @@ class AlarmGet : ComponentActivity() {
             }
             alarmViewModel.update(alarmRepeat)
             idleRunnable?.let { handler.removeCallbacks(it) }
+            alarmViewModel.alarmById.value?.let {
+                if(it.isRepeat) alarmViewModel.delete(it)
+            }
             finish()
         }
         handler.postDelayed(idleRunnable!!, 60 * 1000L)
@@ -70,6 +73,9 @@ class AlarmGet : ComponentActivity() {
                 alarmGetPage(alarmViewModel = alarmViewModel,
                     onFinish = {
                         idleRunnable?.let { handler.removeCallbacks(it) }
+                        alarmViewModel.alarmById.value?.let {
+                            if(it.isRepeat) alarmViewModel.delete(it)
+                        }
                         finish()
                     },
                     settingsManager = settingsManager,
@@ -147,7 +153,7 @@ fun alarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settin
                         isRepeat = true, autoWeek = 0
                     )
                     setAlarm(repeatAlarm,context)
-                    alarmViewModel.update(repeatAlarm)
+                    alarmViewModel.insert(repeatAlarm)
                 }
                 onFinish()
             }) {

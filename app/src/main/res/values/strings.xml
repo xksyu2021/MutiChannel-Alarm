@@ -43,4 +43,5 @@
     <string name="addPage_diy_repeat">Ring repeat dates</string>
     <string name="page2_modeTitle_sm">Silent Mode</string>
     <string name="page2_modeDescribe_sm">The alarm will not ring. It only pop up a page on your phone. The vibration setting will be still kept as what you set.</string>
+    <string name="page2_vibrate">Vibrate when ringing</string>
 </resources>

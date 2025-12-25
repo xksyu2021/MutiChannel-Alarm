@@ -102,6 +102,12 @@ fun setAlarm(alarm: AlarmData,context: Context) {
                 set(Calendar.MILLISECOND, 0)
                 if(alarm.isRepeat){
                     add(Calendar.MINUTE,alarm.remindMinute)
+
+                    //
+                    //add(Calendar.SECOND,10)
+                    //add(Calendar.MINUTE, - alarm.remindMinute)
+                    //For debug
+
                     alarm.timeMinute += alarm.remindMinute
                     if (alarm.timeMinute>=60){
                         alarm.timeMinute -= 60
