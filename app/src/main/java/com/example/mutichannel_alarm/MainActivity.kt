@@ -233,18 +233,18 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
             for(alarm in alarms){
                 var open by remember { mutableStateOf(alarm.isOpen) }
                 var weekSelect = ""
-                if(alarm.autoWeek){
-                    for (code in 0..1) {
+                when(alarm.autoWeek){
+                    2 -> for (code in 0..1) {
                         if(alarm.weekSelect and (0b1 shl code) != 0){
                             weekSelect = weekSelect.plus(autoWeekName[code]).plus("  ")
                         }
                     }
-                }else{
-                    for (code in 0..6) {
+                    1 -> for (code in 0..6) {
                         if(alarm.weekSelect and (0b1 shl code) != 0){
                             weekSelect = weekSelect.plus(weekName[code]).plus("  ")
                         }
                     }
+                    else -> weekSelect = weekSelect.plus(stringResource(R.string.addPage_once))
                 }
 
                 Card(
@@ -441,6 +441,36 @@ fun channelPage(settingsManager : SettingsManager){
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     stringResource(R.string.page2_modeDescribe_sys),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+
+        //4
+        Card(
+            colors = updateChannelColor(4,currentMode),
+            onClick = {
+                currentMode = 4
+                settingsManager.saveChanMode(4)
+                updateChannelSelect(4)
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .padding(vertical = 16.dp)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    stringResource(R.string.page2_modeTitle_sm),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.page2_modeDescribe_sm),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

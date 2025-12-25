@@ -12,7 +12,8 @@ data class AlarmData(
     var timeHour :Int = 0,
     var timeMinute :Int = 0,
 
-    var autoWeek : Boolean = false,
+    //0=once 1=manual 2=auto
+    var autoWeek : Int = 0,
     var weekSelect: Int = 0b00000_00,
 
     var remind : Boolean = true,

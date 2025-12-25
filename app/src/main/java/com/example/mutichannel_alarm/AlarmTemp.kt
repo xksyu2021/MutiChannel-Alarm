@@ -7,7 +7,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 
 data class AlarmTemp(
     val text: MutableState<String> = mutableStateOf("default"),
-    val autoEnabled: MutableState<Boolean> = mutableStateOf(false),
+    val autoEnabled: MutableState<Int> = mutableStateOf(0),
     val autoDays: SnapshotStateList<Boolean> = mutableStateListOf(true, false),
     val days: SnapshotStateList<Boolean> = mutableStateListOf<Boolean>().apply { repeat(7) { add(false) } },
     val remindTimes: MutableState<Int> = mutableStateOf(3),

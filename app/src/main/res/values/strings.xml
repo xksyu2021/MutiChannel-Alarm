@@ -32,9 +32,15 @@
     <string name="pageAdd_delCheck_title">Delete this alarm</string>
     <string name="pageAdd_delCheck_text">This alarm will be deleted. Press \"Stay\" to cancel this action.</string>
     <string name="pageAdd_delCheck_delete">Delete</string>
-    <string name="addPage_autoWeek_text">Automatically identify working days and rest days</string>
     <string name="addPage_diy_ringtone">Ringtone</string>
     <string name="addPage_diy_remind">Remind later</string>
     <string name="addPage_diy_remind_1">times per</string>
     <string name="addPage_diy_remind_2">minutes</string>
+    <string name="addPage_once">Only Once</string>
+    <string name="addPage_diy_once">Ring Only Once</string>
+    <string name="addPage_diy_customize">Customize</string>
+    <string name="addPage_diy_auto">Auto Select</string>
+    <string name="addPage_diy_repeat">Ring repeat dates</string>
+    <string name="page2_modeTitle_sm">Silent Mode</string>
+    <string name="page2_modeDescribe_sm">The alarm will not ring. It only pop up a page on your phone. The vibration setting will be still kept as what you set.</string>
 </resources>

@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [AlarmData::class], version = 4)
+@Database(entities = [AlarmData::class], version = 5)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun AlarmDataDao(): AlarmDataDao
     companion object {

@@ -1,12 +1,14 @@
 package com.example.mutichannel_alarm
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -251,12 +256,11 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
                 temp.remindTimes.value = alarm.remindTime
                 temp.remindMinutes.value = alarm.remindMinute
                 temp.remindEnabled.value = alarm.remind
-                if(temp.autoEnabled.value){
-                    for(code in 0..1){
+                when(temp.autoEnabled.value){
+                    2 -> for(code in 0..1){
                         if((alarm.weekSelect and (0b1 shl code))!=0) temp.autoDays[code] = true
                     }
-                }else{
-                    for(code in 0..6){
+                    1 -> for(code in 0..6){
                         if((alarm.weekSelect and (0b1 shl code))!=0) temp.days[code] = true
                     }
                 }
@@ -356,43 +360,71 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Switch(
-                checked = temp.autoEnabled.value,
-                modifier = Modifier
-                    .padding(
-                        top = 8.dp,
-                        bottom = 8.dp,
-                        end = 8.dp,
-                        start = 0.dp
-                    ),
-                onCheckedChange = {
-                    temp.autoEnabled.value = !temp.autoEnabled.value
+            var showMenu by remember { mutableStateOf(false) }
+            Text(stringResource(R.string.addPage_diy_repeat))
+            Box{
+                IconButton(onClick = { showMenu = !showMenu }) {
+                    Icon(
+                        Icons.Default.ArrowDropDown,
+                        contentDescription = null
+                    )
                 }
-            )
-            Text(stringResource(R.string.addPage_autoWeek_text))
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false },
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.inverseOnSurface
+                        )
+                ) {
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.addPage_diy_once)) },
+                        onClick = {
+                            showMenu = false
+                            temp.autoEnabled.value = 0
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.addPage_diy_customize)) },
+                        onClick = {
+                            showMenu = false
+                            temp.autoEnabled.value = 1
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.addPage_diy_auto)) },
+                        onClick = {
+                            showMenu = false
+                            temp.autoEnabled.value = 2
+                        }
+                    )
+                }
+            }
         }
     }
-    if (temp.autoEnabled.value){
-        Row {
+    when(temp.autoEnabled.value){
+        2 -> Row {
             autoDaysChip(0,temp.autoDays,autoWeekName)
             Spacer(modifier = Modifier.padding(horizontal = 10.dp))
             autoDaysChip(1,temp.autoDays,autoWeekName)
         }
-    }else{
-        Row {
-            daysChip(0,temp.days,weekName)
-            for (code in 1..2){
-                Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                daysChip(code,temp.days,weekName)
+        1 -> {
+            Row {
+                daysChip(0, temp.days, weekName)
+                for (code in 1..2) {
+                    Spacer(modifier = Modifier.padding(horizontal = 5.dp))
+                    daysChip(code, temp.days, weekName)
+                }
+            }
+            Row {
+                daysChip(3, temp.days, weekName)
+                for (code in 4..6) {
+                    Spacer(modifier = Modifier.padding(horizontal = 5.dp))
+                    daysChip(code, temp.days, weekName)
+                }
             }
         }
-        Row {
-            daysChip(3,temp.days,weekName)
-            for (code in 4..6){
-                Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                daysChip(code,temp.days,weekName)
-            }
-        }
+        else -> Text(stringResource(R.string.addPage_diy_once))
     }
 
     HorizontalDivider(
@@ -561,20 +593,19 @@ fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>)
 @OptIn(ExperimentalMaterial3Api::class)
 fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context,settingsManager: SettingsManager) : Boolean {
     var weekSelectTemp = 0b0
-    if (temp.autoEnabled.value) {
-        for (code in 0..1) {
+    when (temp.autoEnabled.value) {
+        2 -> for (code in 0..1) {
             if(temp.autoDays[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
             }
         }
-    } else {
-        for (code in 0..6) {
+        1 -> for (code in 0..6) {
             if(temp.days[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
             }
         }
     }
-    if(weekSelectTemp==0){
+    if(weekSelectTemp==0 && temp.autoEnabled.value!=0){
         Toast.makeText(context, "no day selected", Toast.LENGTH_LONG).show()
         return false
     }
@@ -603,20 +634,19 @@ fun onSave(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context,set
 @OptIn(ExperimentalMaterial3Api::class)
 fun onSaveEdit(temp :AlarmTemp, alarmViewModel: AlarmViewModel, context: Context) : Boolean {
     var weekSelectTemp = 0b0
-    if (temp.autoEnabled.value) {
-        for (code in 0..1) {
+    when(temp.autoEnabled.value) {
+        2 -> for (code in 0..1) {
             if(temp.autoDays[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
             }
         }
-    } else {
-        for (code in 0..6) {
+        1 -> for (code in 0..6) {
             if(temp.days[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
             }
         }
     }
-    if(weekSelectTemp==0){
+    if(weekSelectTemp==0 && temp.autoEnabled.value!=0){
         Toast.makeText(context, "no day selected", Toast.LENGTH_LONG).show()
         return false
     }
