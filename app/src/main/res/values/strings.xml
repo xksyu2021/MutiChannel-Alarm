@@ -44,4 +44,10 @@
     <string name="page2_modeTitle_sm">Silent Mode</string>
     <string name="page2_modeDescribe_sm">The alarm will not ring. It only pop up a page on your phone. The vibration setting will be still kept as what you set.</string>
     <string name="page2_vibrate">Vibrate</string>
+    <string name="title_activity_setting" translatable="false">SettingActivity</string>
+    <string name="title_SettingPage">Settings</string>
+    <string name="settingPage_lang_zh" translatable="false">中文</string>
+    <string name="settingPage_lang_en" translatable="false">English</string>
+    <string name="settingPage_lang_auto">Auto</string>
+    <string name="settingPage_lang">Language</string>
 </resources>

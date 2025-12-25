@@ -176,6 +176,8 @@ fun topMenu(context: Context? = null)
                 leadingIcon = { Icon(Icons.Filled.Settings, null) },
                 onClick = {
                     showMenu = false
+                    val intent = Intent(context, SettingActivity::class.java)
+                    context?.startActivity(intent)
                 }
             )
             DropdownMenuItem(

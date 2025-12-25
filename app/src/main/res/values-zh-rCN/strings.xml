@@ -43,4 +43,7 @@
     <string name="page2_modeDescribe_pm">若存在耳机连接，将仅通过耳机播放铃声。若耳机断连将通过扬声器外放。</string>
     <string name="page2_modeDescribe_head">仅通过耳机播放闹钟铃声，耳机断连则静音通知。</string>
     <string name="page2_modeDescribe_sys">由系统决定振铃的音频通道。大多数情况下，这代表外放铃声。</string>
+    <string name="title_SettingPage">设置</string>
+    <string name="settingPage_lang_auto">自动</string>
+    <string name="settingPage_lang">语言</string>
 </resources>
