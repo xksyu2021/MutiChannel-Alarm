@@ -7,7 +7,9 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.compose.material3.CenterAlignedTopAppBar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Calendar
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -24,7 +26,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 context.startActivity(intentGet)
             }
             Intent.ACTION_BOOT_COMPLETED -> {
-
+                CoroutineScope(Dispatchers.Main).launch{
+                    reloadList(context)
+                }
             }
             else -> 0
         }
@@ -173,4 +177,13 @@ fun cancelAlarm(alarm: AlarmData,context: Context){
     alarmManager.cancel(alarmPendingIntent)
     alarmPendingIntent.cancel()
     println("====== Call cancelAlarm FINISHED ======")
+}
+
+suspend fun reloadList(context: Context){
+    val repository = (context.applicationContext as MCApplication).repository
+    repository.alarms.collect {
+        list -> list.forEach{
+            alarm -> setAlarm(alarm,context)
+        }
+    }
 }

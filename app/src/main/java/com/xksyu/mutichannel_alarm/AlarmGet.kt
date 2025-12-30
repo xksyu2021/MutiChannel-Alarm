@@ -32,6 +32,7 @@ import android.os.Looper
 import androidx.activity.compose.BackHandler
 import java.lang.Runnable
 
+
 class AlarmGet : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
     private val handler = Handler(Looper.getMainLooper())
