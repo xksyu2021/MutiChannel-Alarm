@@ -221,7 +221,7 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
                 .padding(innerPadding)
                 .padding(top = 25.dp)
         ) {
-            addConfigList(temp = temp,isEdit = isEdit, alarmById = alarmById)
+            AddConfigList(temp = temp,isEdit = isEdit, alarmById = alarmById)
             val focusManager = LocalFocusManager.current
             LaunchedEffect(Unit) {
                 focusManager.clearFocus()
@@ -239,7 +239,7 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
+fun AddConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
     val autoWeekName = arrayOf("weekdays","weekends")
 
@@ -411,23 +411,23 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
     when(temp.autoEnabled.value){
         3 -> Text(stringResource(R.string.addPage_diy_every))
         2 -> Row {
-            autoDaysChip(0,temp.autoDays,autoWeekName)
+            AutoDaysChip(0,temp.autoDays,autoWeekName)
             Spacer(modifier = Modifier.padding(horizontal = 10.dp))
-            autoDaysChip(1,temp.autoDays,autoWeekName)
+            AutoDaysChip(1,temp.autoDays,autoWeekName)
         }
         1 -> {
             Row {
-                daysChip(0, temp.days, weekName)
+                DaysChip(0, temp.days, weekName)
                 for (code in 1..2) {
                     Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                    daysChip(code, temp.days, weekName)
+                    DaysChip(code, temp.days, weekName)
                 }
             }
             Row {
-                daysChip(3, temp.days, weekName)
+                DaysChip(3, temp.days, weekName)
                 for (code in 4..6) {
                     Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                    daysChip(code, temp.days, weekName)
+                    DaysChip(code, temp.days, weekName)
                 }
             }
         }
@@ -489,13 +489,13 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("${temp.remindTimes.value}")
-                remindTimeDropdown(temp)
+                RemindTimeDropdown(temp)
                 Text(stringResource(R.string.addPage_diy_remind_1),
                     maxLines = 1
                 )
                 Spacer(modifier = Modifier.padding(horizontal = 10.dp))
                 Text("${temp.remindMinutes.value}")
-                remindMinutesDropdown(temp)
+                RemindMinutesDropdown(temp)
                 Text(stringResource(R.string.addPage_diy_remind_2),
                     maxLines = 1
                 )
@@ -505,7 +505,7 @@ fun addConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
 }
 
 @Composable
-fun remindTimeDropdown(temp :AlarmTemp) {
+fun RemindTimeDropdown(temp :AlarmTemp) {
     var expanded by remember { mutableStateOf(false) }
     Box{
         IconButton(onClick = { expanded = !expanded }) {
@@ -531,7 +531,7 @@ fun remindTimeDropdown(temp :AlarmTemp) {
 }
 
 @Composable
-fun remindMinutesDropdown(temp :AlarmTemp) {
+fun RemindMinutesDropdown(temp :AlarmTemp) {
     var expanded by remember { mutableStateOf(false) }
     Box{
         IconButton(onClick = { expanded = !expanded }) {
@@ -557,7 +557,7 @@ fun remindMinutesDropdown(temp :AlarmTemp) {
 }
 
 @Composable
-fun autoDaysChip(code :Int,autoDays :SnapshotStateList<Boolean>,autoWeekName :Array<String>) {
+fun AutoDaysChip(code :Int,autoDays :SnapshotStateList<Boolean>,autoWeekName :Array<String>) {
     FilterChip(
         onClick = { autoDays[code] = !autoDays[code] },
         label = {
@@ -577,7 +577,7 @@ fun autoDaysChip(code :Int,autoDays :SnapshotStateList<Boolean>,autoWeekName :Ar
     )
 }
 @Composable
-fun daysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>){
+fun DaysChip(code :Int,days :SnapshotStateList<Boolean>,weekName :Array<String>){
     FilterChip(
         onClick = { days[code] = !days[code]  },
         label = {

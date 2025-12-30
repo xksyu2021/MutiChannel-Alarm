@@ -30,7 +30,6 @@ class AlarmReceiver : BroadcastReceiver() {
                     reloadList(context)
                 }
             }
-            else -> 0
         }
     }
 }

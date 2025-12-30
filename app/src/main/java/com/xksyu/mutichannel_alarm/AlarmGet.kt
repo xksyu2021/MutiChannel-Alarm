@@ -71,7 +71,7 @@ class AlarmGet : ComponentActivity() {
 
         setContent {
             ContrastAwareReplyTheme{
-                alarmGetPage(alarmViewModel = alarmViewModel,
+                AlarmGetPage(alarmViewModel = alarmViewModel,
                     onFinish = {
                         idleRunnable?.let { handler.removeCallbacks(it) }
                         alarmViewModel.alarmById.value?.let {
@@ -89,7 +89,7 @@ class AlarmGet : ComponentActivity() {
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun alarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settingsManager: SettingsManager,context: Context){
+fun AlarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settingsManager: SettingsManager,context: Context){
     val temp = AlarmTemp()
     val alarmById by alarmViewModel.alarmById.collectAsState()
     var updateStatu by remember { mutableStateOf(false) }

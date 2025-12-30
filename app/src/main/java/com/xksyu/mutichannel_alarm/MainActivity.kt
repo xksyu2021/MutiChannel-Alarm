@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
         settingsManager = SettingsManager(this)
         setContent {
             ContrastAwareReplyTheme{
-                mainPage(settingsManager = settingsManager, alarmViewModel = alarmViewModel, context = this@MainActivity)
+                MainPage(settingsManager = settingsManager, alarmViewModel = alarmViewModel, context = this@MainActivity)
             }
         }
     }
@@ -80,7 +80,7 @@ class MainActivity : ComponentActivity() {
 //the main page index.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun mainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel, context :Context? = null) {
+fun MainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel, context :Context? = null) {
     var showPage by remember { mutableIntStateOf(0) } //1 for debug. set it as 0 in release.
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -94,7 +94,7 @@ fun mainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel, c
                     Text(text = stringResource(R.string.title_mainPage))
                 },
                 actions = {
-                    topMenu(context)
+                    TopMenu(context)
                 }
             )
         },
@@ -143,8 +143,8 @@ fun mainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel, c
                 .fillMaxSize()
         ) {
             when(showPage){
-                1 -> channelPage(settingsManager = settingsManager)
-                else -> alarmPage(alarmViewModel = alarmViewModel,context = context)
+                1 -> ChannelPage(settingsManager = settingsManager)
+                else -> AlarmPage(alarmViewModel = alarmViewModel,context = context)
             }
         }
     }
@@ -152,7 +152,7 @@ fun mainPage(settingsManager :SettingsManager, alarmViewModel: AlarmViewModel, c
 
 //menu details of main pages.
 @Composable
-fun topMenu(context: Context? = null)
+fun TopMenu(context: Context? = null)
 {
     var showMenu by remember { mutableStateOf(false) }
     Box(modifier = Modifier.padding(10.dp)) {
@@ -203,9 +203,9 @@ fun topMenu(context: Context? = null)
 
 //pages
 //alarmPage
-@SuppressLint("ComposableNaming")
+@SuppressLint("ComposableNaming", "DefaultLocale")
 @Composable
-fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
+fun AlarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
     val scrollState = rememberScrollState()
     val alarms by remember { alarmViewModel.alarms }.collectAsState(initial = emptyList())
     val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
@@ -326,7 +326,7 @@ fun alarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
 
 //channelPage
 @Composable
-fun channelPage(settingsManager : SettingsManager){
+fun ChannelPage(settingsManager : SettingsManager){
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier

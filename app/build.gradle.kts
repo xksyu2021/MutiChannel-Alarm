@@ -13,8 +13,8 @@ android {
         applicationId = "com.xksyu.mutichannel_alarm"
         minSdk = 29
         targetSdk = 36
-        versionCode = 8
-        versionName = "0 build 29 /25.12.25"
+        versionCode = 9
+        versionName = "0 build 30 /25.12.30"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,10 +65,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    val room_version = "2.8.4"
-    implementation("androidx.room:room-runtime:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
+    val roomVersion = "2.8.4"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 }
