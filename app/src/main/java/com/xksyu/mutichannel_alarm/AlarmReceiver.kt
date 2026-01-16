@@ -143,20 +143,8 @@ fun setAlarm(alarm: AlarmData,context: Context) {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
 
-    val showIntent = Intent(context, AlarmGet::class.java).apply {
-        putExtra("ALARM_ID", alarm.id)
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK and Intent.FLAG_ACTIVITY_NEW_TASK
-    }
-    val showPendingIntent = PendingIntent.getActivity(
-        context,
-        alarm.id+10000,
-        showIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-    )
-
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    val alarmClockInfo = AlarmClockInfo(time.timeInMillis,showPendingIntent)
-    alarmManager.setAlarmClock(alarmClockInfo,alarmPendingIntent)
+    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,time.timeInMillis,alarmPendingIntent)
 }
 
 fun cancelAlarm(alarm: AlarmData,context: Context){

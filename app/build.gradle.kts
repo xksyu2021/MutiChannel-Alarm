@@ -13,8 +13,8 @@ android {
         applicationId = "com.xksyu.mutichannel_alarm"
         minSdk = 29
         targetSdk = 36
-        versionCode = 9
-        versionName = "0 build 30 /25.12.30"
+        versionCode = 10
+        versionName = "0 build 32 /26.01.16"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

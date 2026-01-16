@@ -50,4 +50,32 @@
     <string name="settingPage_lang_en" translatable="false">English</string>
     <string name="settingPage_lang_auto">Auto</string>
     <string name="settingPage_lang">Language</string>
+    <string name="addPage_alarmName">Alarm Name</string>
+    <string name="addPage_default">default</string>
+    <string name="dayOfWeek_1">Mon</string>
+    <string name="dayOfWeek_2">Tue</string>
+    <string name="dayOfWeek_3">Wen</string>
+    <string name="dayOfWeek_4">Tur</string>
+    <string name="dayOfWeek_5">Fri</string>
+    <string name="dayOfWeek_6">Sat</string>
+    <string name="dayOfWeek_7">Sun</string>
+    <string name="dayOfWeek_11">weekday</string>
+    <string name="dayOfWeek_12">weekend</string>
+    <string name="getPage_again">Ring again</string>
+    <string name="getPage_close">Stop</string>
+    <string name="actPage_onBack_title">not to grant permission?</string>
+    <string name="actPage_onBack_text">These permissions are necessary for the alarm clock to trigger normally. If you decide to grant these permissions later, you can set them in the \"Activation\" section of the menu.</string>
+    <string name="actPage_onBack_back">Exit</string>
+    <string name="actPage_onBack_continue">Continue</string>
+    <string name="actPage_text">In order for the software to function properly, you need to grant the following permissions.Due to different designs by phone manufacturers, some permissions may not be able to jump normally after clicking the button. Please set them manually.</string>
+    <string name="actPage_grant">Grant</string>
+    <string name="actPage_permission_ea_t">Exact alarm permission</string>
+    <string name="actPage_permission_ea_c">Enable the software to set alarms on mobile phones</string>
+    <string name="actPage_permission_notice_t">Notification permission</string>
+    <string name="actPage_permission_notice_c">Enable the alarm clock to display and ring</string>
+    <string name="actPage_permission_dis_t">Ignore battery optimization</string>
+    <string name="actPage_permission_dis_c">Prevent the alarm clock from being disabled due to the system\'s power-saving strategy</string>
+    <string name="actPage_ok">Granted</string>
+    <string name="actPage_permission_bg_t">Background activity permissions</string>
+    <string name="actPage_permission_bg_c">Enable the alarm clock to remain active even after exiting the program</string>
 </resources>

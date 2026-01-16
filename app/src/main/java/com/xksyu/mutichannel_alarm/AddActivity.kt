@@ -7,6 +7,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,6 +59,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 import java.util.Calendar
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 
 class AddActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
@@ -240,8 +245,13 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
-    val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
-    val autoWeekName = arrayOf("weekdays","weekends")
+    val weekName = arrayOf(stringResource(R.string.dayOfWeek_1),stringResource(R.string.dayOfWeek_2),stringResource(R.string.dayOfWeek_3),stringResource(R.string.dayOfWeek_4),stringResource(R.string.dayOfWeek_5),stringResource(R.string.dayOfWeek_6),stringResource(R.string.dayOfWeek_7))
+    val autoWeekName = arrayOf(stringResource(R.string.dayOfWeek_11),stringResource(R.string.dayOfWeek_12))
+
+    if(temp.text.value == "default")
+        temp.text.value = stringResource(R.string.addPage_default)
+    if(temp.ringtone.value == "default")
+        temp.ringtone.value = stringResource(R.string.addPage_default)
 
     println("****** List Recompose Count ******")
     var updateStatu by remember { mutableStateOf(!isEdit) }
@@ -286,7 +296,7 @@ fun AddConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
             singleLine = true,
             value = temp.text.value,
             onValueChange = { temp.text.value = it },
-            label = { Text("Alarm Name") },
+            label = { Text(stringResource(R.string.addPage_alarmName)) },
             placeholder = null,
             modifier = Modifier
                 .padding(10.dp)
@@ -416,16 +426,17 @@ fun AddConfigList(temp :AlarmTemp,isEdit : Boolean,alarmById: AlarmData?){
             AutoDaysChip(1,temp.autoDays,autoWeekName)
         }
         1 -> {
-            Row {
-                DaysChip(0, temp.days, weekName)
-                for (code in 1..2) {
-                    Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                    DaysChip(code, temp.days, weekName)
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                state = rememberLazyListState()
+            ) {
+                val items = (1..6).toList()
+                item{
+                    DaysChip(0, temp.days, weekName)
                 }
-            }
-            Row {
-                DaysChip(3, temp.days, weekName)
-                for (code in 4..6) {
+                items(items) { code ->
                     Spacer(modifier = Modifier.padding(horizontal = 5.dp))
                     DaysChip(code, temp.days, weekName)
                 }

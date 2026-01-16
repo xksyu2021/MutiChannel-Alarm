@@ -30,6 +30,7 @@ import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.compose.BackHandler
+import androidx.compose.ui.res.stringResource
 import java.lang.Runnable
 
 
@@ -142,7 +143,7 @@ fun AlarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settin
                 Spacer(Modifier.padding(vertical = 15.dp))
                 Text(
                     text = temp.text.value,
-                    style = MaterialTheme.typography.headlineLarge
+                    style = MaterialTheme.typography.headlineMedium
                 )
             }
 
@@ -158,7 +159,7 @@ fun AlarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settin
                 }
                 onFinish()
             }) {
-                Text(text="Ring again",
+                Text(text= stringResource(R.string.getPage_again),
                     style = MaterialTheme.typography.headlineMedium
                 )
             }
@@ -166,7 +167,7 @@ fun AlarmGetPage(alarmViewModel: AlarmViewModel,onFinish: () -> Unit = {},settin
             OutlinedButton(onClick = {
                 onFinish()
             }) {
-                Text(text="Stop",
+                Text(text= stringResource(R.string.getPage_close),
                     style = MaterialTheme.typography.headlineMedium
                 )
             }

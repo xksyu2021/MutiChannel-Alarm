@@ -194,6 +194,8 @@ fun TopMenu(context: Context? = null)
                 leadingIcon = { Icon(Icons.Filled.Lock, null) },
                 onClick = {
                     showMenu = false
+                    val intent = Intent(context, ActivateActivity::class.java)
+                    context?.startActivity(intent)
                 }
             )
         }
@@ -208,8 +210,8 @@ fun TopMenu(context: Context? = null)
 fun AlarmPage(alarmViewModel: AlarmViewModel,context: Context? = null){
     val scrollState = rememberScrollState()
     val alarms by remember { alarmViewModel.alarms }.collectAsState(initial = emptyList())
-    val weekName = arrayOf("Mon","Tue","Wen","Tur","Fri","Sat","Sun")
-    val autoWeekName = arrayOf("weekdays","weekends")
+    val weekName = arrayOf(stringResource(R.string.dayOfWeek_1),stringResource(R.string.dayOfWeek_2),stringResource(R.string.dayOfWeek_3),stringResource(R.string.dayOfWeek_4),stringResource(R.string.dayOfWeek_5),stringResource(R.string.dayOfWeek_6),stringResource(R.string.dayOfWeek_7))
+    val autoWeekName = arrayOf(stringResource(R.string.dayOfWeek_11),stringResource(R.string.dayOfWeek_12))
     if(alarms.isEmpty()){
         Column(
             modifier = Modifier
@@ -379,7 +381,7 @@ fun ChannelPage(settingsManager : SettingsManager){
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
             Column(
@@ -409,7 +411,7 @@ fun ChannelPage(settingsManager : SettingsManager){
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
             Column(
@@ -439,7 +441,7 @@ fun ChannelPage(settingsManager : SettingsManager){
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
             Column(
@@ -469,7 +471,7 @@ fun ChannelPage(settingsManager : SettingsManager){
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)
-                .padding(vertical = 16.dp)
+                .padding(vertical = 8.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
             Column(
