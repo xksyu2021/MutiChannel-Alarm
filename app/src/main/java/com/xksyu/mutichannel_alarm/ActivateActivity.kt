@@ -204,6 +204,7 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
                             putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                         }
                         context.startActivity(intent)
+
                     }) {
                         Text(stringResource(R.string.actPage_grant))
                     }
@@ -247,9 +248,17 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
                 if(!per.fullScreen.value){
                     Button(onClick = {
 
-                        val intent = Intent("android.settings.MANAGE_FULL_SCREEN_INTENT")
-                        intent.data = android.net.Uri.parse("package:${context?.packageName}")
-                        context.startActivity(intent)
+                        try {
+                            val intent = Intent().apply {
+                                action = Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT
+                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intentB.data = Uri.parse("package:${context.packageName}")
+                            context.startActivity(intentB)
+                        }
 
                     }) {
                         Text(stringResource(R.string.actPage_grant))
@@ -293,9 +302,19 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
             ) {
                 if(!per.openScreen.value){
                     Button(onClick = {
-                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS )
-                        intent.data = android.net.Uri.parse("package:${context?.packageName}")
-                        context.startActivity(intent)
+
+                        try {
+                            val intent = Intent().apply {
+                                action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intentB.data = Uri.parse("package:${context.packageName}")
+                            context.startActivity(intentB)
+                        }
+
                     }) {
                         Text(stringResource(R.string.actPage_grant))
                     }
