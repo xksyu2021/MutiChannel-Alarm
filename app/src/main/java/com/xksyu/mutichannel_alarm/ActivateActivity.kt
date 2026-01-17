@@ -1,6 +1,5 @@
 package com.xksyu.mutichannel_alarm
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
@@ -42,9 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.app.AlarmManagerCompat.canScheduleExactAlarms
-import androidx.core.content.ContextCompat.startActivity
 import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 
 data class Permission(
@@ -282,54 +279,54 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
                 .padding(vertical = 15.dp)
         )
 
-        Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .padding(16.dp)
-                .fillMaxWidth(0.95f)
-        ) {
-            Text(
-                stringResource(R.string.actPage_permission_os_t),
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Text(
-                stringResource(R.string.actPage_permission_os_c),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                if(!per.openScreen.value){
-                    Button(onClick = {
-
-                        try {
-                            val intent = Intent().apply {
-                                action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                            }
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intentB.data = Uri.parse("package:${context.packageName}")
-                            context.startActivity(intentB)
-                        }
-
-                    }) {
-                        Text(stringResource(R.string.actPage_grant))
-                    }
-                }else{
-                    Button(onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                        )
-                    ) {
-                        Text(stringResource(R.string.actPage_ok))
-                    }
-                }
-            }
-        }
+//        Column(
+//            modifier = Modifier
+//                .wrapContentHeight()
+//                .padding(16.dp)
+//                .fillMaxWidth(0.95f)
+//        ) {
+//            Text(
+//                stringResource(R.string.actPage_permission_os_t),
+//                style = MaterialTheme.typography.headlineSmall
+//            )
+//            Text(
+//                stringResource(R.string.actPage_permission_os_c),
+//                style = MaterialTheme.typography.bodyMedium
+//            )
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.End
+//            ) {
+//                if(!per.openScreen.value){
+//                    Button(onClick = {
+//
+//                        try {
+//                            val intent = Intent().apply {
+//                                action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+//                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+//                            }
+//                            context.startActivity(intent)
+//                        } catch (e: Exception) {
+//                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+//                            intentB.data = Uri.parse("package:${context.packageName}")
+//                            context.startActivity(intentB)
+//                        }
+//
+//                    }) {
+//                        Text(stringResource(R.string.actPage_grant))
+//                    }
+//                }else{
+//                    Button(onClick = {},
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+//                            contentColor = MaterialTheme.colorScheme.tertiary,
+//                        )
+//                    ) {
+//                        Text(stringResource(R.string.actPage_ok))
+//                    }
+//                }
+//            }
+//        }
 
 //        HorizontalDivider(
 //            thickness = 2.dp,

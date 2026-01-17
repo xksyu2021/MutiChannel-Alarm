@@ -31,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 import android.os.Handler
 import android.os.Looper
+import android.os.PowerManager
+import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.res.stringResource
 import java.lang.Runnable
@@ -43,6 +45,8 @@ class AlarmGet : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         val id = intent.getIntExtra("ALARM_ID",-1)
         settingsManager = SettingsManager(this)
         println("----------------AlarmGet---------------")
@@ -51,6 +55,14 @@ class AlarmGet : ComponentActivity() {
             val repository = (application as MCApplication).repository
             AlarmViewModelFactory(id,repository)
         }
+
+        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
+        val wakeLock = powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "MCA:WakeLockTag"
+        )
+        wakeLock.setReferenceCounted(false)
+        wakeLock.acquire(60 * 1000L)
 
         idleRunnable = Runnable {
             val alarmRepeat = alarmViewModel.alarmById.value?.copy(
@@ -72,6 +84,8 @@ class AlarmGet : ComponentActivity() {
             val serviceIntent = Intent(this, AlarmForegroundService::class.java)
             this.stopService(serviceIntent)
             notificationManager.cancel(id)
+
+            wakeLock.release()
             finish()
         }
         handler.postDelayed(idleRunnable!!, 60 * 1000L)
@@ -88,6 +102,8 @@ class AlarmGet : ComponentActivity() {
                         val serviceIntent = Intent(this, AlarmForegroundService::class.java)
                         this.stopService(serviceIntent)
                         notificationManager.cancel(id)
+
+                        wakeLock.release()
                         finish()
                     },
                     settingsManager = settingsManager,
