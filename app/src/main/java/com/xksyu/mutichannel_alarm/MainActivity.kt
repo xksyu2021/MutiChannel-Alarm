@@ -72,6 +72,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             ContrastAwareReplyTheme{
                 MainPage(settingsManager = settingsManager, alarmViewModel = alarmViewModel, context = this@MainActivity)
+                if(settingsManager.isFirst()){
+                    val intent = Intent(this, ActivateActivity::class.java)
+                    this.startActivity(intent)
+                }
             }
         }
     }

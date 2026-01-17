@@ -148,7 +148,7 @@ fun AddPage(onBack: () -> Unit = {}, onSave: () -> Unit = {}, isEdit : Boolean =
     if (showDelCheck) {
         AlertDialog(
             onDismissRequest = { },
-            title = { Text("Delete") },
+            title = { Text(stringResource(R.string.addPage_delete_title)) },
             text = {
                 Text(stringResource(R.string.pageAdd_delCheck_text))
             },

@@ -1,7 +1,9 @@
 package com.xksyu.mutichannel_alarm
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -66,6 +68,10 @@ class AlarmGet : ComponentActivity() {
             alarmViewModel.alarmById.value?.let {
                 if(it.isRepeat) alarmViewModel.delete(it)
             }
+            val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val serviceIntent = Intent(this, AlarmForegroundService::class.java)
+            this.stopService(serviceIntent)
+            notificationManager.cancel(id)
             finish()
         }
         handler.postDelayed(idleRunnable!!, 60 * 1000L)
@@ -78,6 +84,10 @@ class AlarmGet : ComponentActivity() {
                         alarmViewModel.alarmById.value?.let {
                             if(it.isRepeat) alarmViewModel.delete(it)
                         }
+                        val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val serviceIntent = Intent(this, AlarmForegroundService::class.java)
+                        this.stopService(serviceIntent)
+                        notificationManager.cancel(id)
                         finish()
                     },
                     settingsManager = settingsManager,

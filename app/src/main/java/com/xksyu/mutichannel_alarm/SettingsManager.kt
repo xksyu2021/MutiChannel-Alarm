@@ -78,10 +78,13 @@ class SettingsManager(private val context: Context?) {
     fun isFirst() : Boolean{
         if (context != null) {
             val isFirst = sharedPref?.getBoolean(IS_FIRST, true) ?: true
-            if(isFirst) sharedPref?.edit()?.putBoolean(IS_FIRST,  false)?.apply()
             return isFirst
         } else {
             return previewFirst
         }
+    }
+
+    fun notFirst(){
+        sharedPref?.edit()?.putBoolean(IS_FIRST,  false)?.apply()
     }
 }
