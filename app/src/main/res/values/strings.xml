@@ -87,4 +87,8 @@
     <string name="notice_title">Alarm</string>
     <string name="notice_stop">Stop</string>
     <string name="notice_later">Ring Later</string>
+    <string name="actPage_select_def_t">Default Ways</string>
+    <string name="actPage_select_def_c">Manually grant the necessary permissions and use the system method to achieve ringtone customization for different channels. No additional preparation is required, but the alarm may not work as expected.</string>
+    <string name="actPage_select_shizuku_t" translatable="false">Shizuku</string>
+    <string name="actPage_select_shizuku_c">Using Shizuku ensures stable software operation. If you know how to use it, it\'s a good thing. However, if you\'re not sure what it is, don\'t click on it.</string>
 </resources>

@@ -20,15 +20,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -36,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,6 +53,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.app.AlarmManagerCompat.canScheduleExactAlarms
 import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
+import java.lang.System.exit
+import kotlin.system.exitProcess
 
 data class Permission(
     val exactAlarm: MutableState<Boolean> = mutableStateOf(false),
@@ -64,33 +73,58 @@ data class Permission(
     }
 }
 
+data class Page(var step: MutableState<Int> = mutableStateOf(0))
 class ActivateActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settingsManager = SettingsManager(this)
         enableEdgeToEdge()
+        var page = Page()
         setContent {
             ContrastAwareReplyTheme{
-                ActivatePage(onBack = { finish() }, context = this, activity = this,settingsManager)
+                when(page.step.value) {
+                    0 -> ActivatePageGuide(
+                            onBack = {
+                                settingsManager.notFirst()
+                                finish()
+                            },
+                            context = this, settingsManager, page = page
+                        )
+                    1 -> {ActivatePageA(
+                        onBackA = {
+                            page.step.value = 0
+                        },
+                        onBackB = {
+                            settingsManager.notFirst()
+                            settingsManager.waySet(1)
+                            finish()
+                        },
+                        context = this)
+                    }
+                    2 -> ActivatePageB(
+                        onBackA = {
+                            page.step.value = 0
+                        },
+                        onBackB = {
+                            settingsManager.notFirst()
+                            settingsManager.waySet(2)
+                            finish()
+                        },
+                        context = this, activity = this
+                    )
+                }
             }
         }
     }
 }
 
-@SuppressLint("BatteryLife")
 @Composable
-fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,settingsManager: SettingsManager){
-    val per = Permission(context = context)
-    per.permissionCheck()
-
-    //per.exactAlarm.value = true //for debug
-
+fun ActivatePageGuide(onBack: () -> Unit = {}, context: Context, settingsManager: SettingsManager, page: Page) {
     var showCheck by remember { mutableStateOf(false) }
     BackHandler(enabled = settingsManager.isFirst()) {
         showCheck = true
     }
-
     if (showCheck) {
         AlertDialog(
             onDismissRequest = { },
@@ -98,15 +132,14 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
             text = {
                 Text(stringResource(R.string.actPage_onBack_text))
             },
-            confirmButton = {
-                Button(onClick = { showCheck = false }) {
+            dismissButton = {
+                OutlinedButton(onClick = { showCheck = false }) {
                     Text(stringResource(R.string.actPage_onBack_continue))
                 }
             },
-            dismissButton = {
-                OutlinedButton(onClick = {
+            confirmButton = {
+                Button(onClick = {
                     showCheck = false
-                    settingsManager.notFirst()
                     onBack()
                 }
                 ) {
@@ -115,6 +148,86 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
             }
         )
     }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .padding(top = 30.dp)
+    ){
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
+            onClick = {
+                page.step.value = 2
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .padding(vertical = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    stringResource(R.string.actPage_select_def_t),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.actPage_select_def_c),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+        Card(
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
+            onClick = {
+                page.step.value = 1
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.95f)
+                .padding(vertical = 8.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    stringResource(R.string.actPage_select_shizuku_t),
+                    style = MaterialTheme.typography.headlineSmall,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.actPage_select_shizuku_c),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ActivatePageA(context: Context, onBackA: () -> Unit = {}, onBackB: () -> Unit = {}){
+    BackHandler(enabled = true) {
+        onBackA()
+    }
+
+
+}
+
+@Composable
+fun ActivatePageB (onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: Context, activity: Activity) {
+    val per = Permission(context = context)
+    per.permissionCheck()
+
+    BackHandler(enabled = true) {
+        onBackA()
+    }
+    //per.exactAlarm.value = true //for debug
 
     val scrollState = rememberScrollState()
     Column(
@@ -361,7 +474,7 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
                     Button(onClick = {
 
                         try {
-                            val intent = Intent("oppo.safe.permission.startup")
+                            val intent = Intent(Settings.ACTION_SETTINGS)
                             intent.data = android.net.Uri.parse("package:${context?.packageName}")
                             context.startActivity(intent)
                         } catch (e: Exception) {
@@ -390,24 +503,22 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
         Text(stringResource(R.string.actPage_textB))
         Spacer(Modifier.padding(vertical = 10.dp))
 
-        if(settingsManager.isFirst()){
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                horizontalArrangement = Arrangement.End
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(
+                onClick = {
+                    onBackB()
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.tertiary,
+                )
             ) {
-                Button(
-                    onClick = {
-                        showCheck = true
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                    )
-                ) {
-                    Text(stringResource(R.string.actPage_next))
-                }
+                Text(stringResource(R.string.actPage_next))
             }
         }
     }

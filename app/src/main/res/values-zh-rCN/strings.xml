@@ -83,4 +83,7 @@
     <string name="notice_title">闹钟</string>
     <string name="notice_stop">停止</string>
     <string name="notice_later">稍后再响</string>
+    <string name="actPage_select_def_t">默认方法</string>
+    <string name="actPage_select_def_c">手动给予必要权限，并使用系统方法达到分通道振铃。不需要额外的准备，但是闹铃可能会不按预期工作。</string>
+    <string name="actPage_select_shizuku_c">使用Shizuku使软件稳定运行。如果你知道如何使用，这是个好东西。不过，如果你不清楚这是什么，不要点击。</string>
 </resources>
