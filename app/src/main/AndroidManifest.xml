@@ -33,7 +33,11 @@
             android:exported="false" />
         <activity
             android:name=".AlarmGet"
-            android:exported="false" />
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name=".ActivateActivity"
             android:exported="false" />

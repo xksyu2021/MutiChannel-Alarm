@@ -105,7 +105,12 @@ class AlarmForegroundService : Service() {
 
         val fullScreenIntent = Intent(this, AlarmGet::class.java).apply {
             putExtra("ALARM_ID", alarmId)
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                Intent.FLAG_ACTIVITY_NO_USER_ACTION or
+                Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+            )
         }
         val pendingIntent = PendingIntent.getActivity(
             this, alarmId, fullScreenIntent, PendingIntent.FLAG_IMMUTABLE
@@ -146,15 +151,15 @@ class AlarmForegroundService : Service() {
         val repository = (application as MCApplication).repository
         val notificationBuilder = NotificationCompat.Builder(this, "alarm_channel_id")
             .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .setContentTitle("Alarm")
+            .setContentTitle(getString(R.string.notice_title))
             //.setContentText(repository.getById(alarmId)?.name ?: "null")
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setFullScreenIntent(pendingIntent, true)
             .setAutoCancel(true)
             .setDeleteIntent(deletePendingIntent)
-            .addAction(0,"Stop",stopPendingIntent)
-            .addAction(0,"Ring Later",snoozePendingIntent)
+            .addAction(0, getString(R.string.notice_stop),stopPendingIntent)
+            .addAction(0, getString(R.string.notice_later),snoozePendingIntent)
             .setOngoing(true)
 
         CoroutineScope(Dispatchers.IO).launch {

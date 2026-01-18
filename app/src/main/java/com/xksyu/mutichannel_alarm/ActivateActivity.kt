@@ -1,5 +1,6 @@
 package com.xksyu.mutichannel_alarm
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
@@ -9,6 +10,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -41,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.app.AlarmManagerCompat.canScheduleExactAlarms
 import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
 
@@ -48,8 +51,8 @@ data class Permission(
     val exactAlarm: MutableState<Boolean> = mutableStateOf(false),
     val noticePermission: MutableState<Boolean> = mutableStateOf(false),
     val fullScreen: MutableState<Boolean> = mutableStateOf(false),
-    val openScreen: MutableState<Boolean> = mutableStateOf(false),
-    val background: MutableState<Boolean> = mutableStateOf(false),
+    val lockScreen: MutableState<Boolean> = mutableStateOf(false),
+    val selfStart: MutableState<Boolean> = mutableStateOf(false),
     val context: Context
 ){
     fun permissionCheck(){
@@ -279,104 +282,113 @@ fun ActivatePage(onBack: () -> Unit = {}, context: Context, activity: Activity,s
                 .padding(vertical = 15.dp)
         )
 
-//        Column(
-//            modifier = Modifier
-//                .wrapContentHeight()
-//                .padding(16.dp)
-//                .fillMaxWidth(0.95f)
-//        ) {
-//            Text(
-//                stringResource(R.string.actPage_permission_os_t),
-//                style = MaterialTheme.typography.headlineSmall
-//            )
-//            Text(
-//                stringResource(R.string.actPage_permission_os_c),
-//                style = MaterialTheme.typography.bodyMedium
-//            )
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.End
-//            ) {
-//                if(!per.openScreen.value){
-//                    Button(onClick = {
-//
-//                        try {
-//                            val intent = Intent().apply {
-//                                action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-//                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-//                            }
-//                            context.startActivity(intent)
-//                        } catch (e: Exception) {
-//                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-//                            intentB.data = Uri.parse("package:${context.packageName}")
-//                            context.startActivity(intentB)
-//                        }
-//
-//                    }) {
-//                        Text(stringResource(R.string.actPage_grant))
-//                    }
-//                }else{
-//                    Button(onClick = {},
-//                        colors = ButtonDefaults.buttonColors(
-//                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-//                            contentColor = MaterialTheme.colorScheme.tertiary,
-//                        )
-//                    ) {
-//                        Text(stringResource(R.string.actPage_ok))
-//                    }
-//                }
-//            }
-//        }
+        Column(
+            modifier = Modifier
+                .wrapContentHeight()
+                .padding(16.dp)
+                .fillMaxWidth(0.95f)
+        ) {
+            Text(
+                stringResource(R.string.actPage_permission_ls_t),
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                stringResource(R.string.actPage_permission_ls_c),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                if(!per.lockScreen.value){
+                    Button(onClick = {
+                        val CODE_NOTICE = 1001
 
-//        HorizontalDivider(
-//            thickness = 2.dp,
-//            modifier = Modifier
-//                .padding(horizontal = 20.dp)
-//                .padding(vertical = 15.dp)
-//        )
-//
-//        Column(
-//            modifier = Modifier
-//                .wrapContentHeight()
-//                .padding(16.dp)
-//                .fillMaxWidth(0.95f)
-//        ) {
-//            Text(
-//                stringResource(R.string.actPage_permission_bg_t),
-//                style = MaterialTheme.typography.headlineSmall
-//            )
-//            Text(
-//                stringResource(R.string.actPage_permission_bg_c),
-//                style = MaterialTheme.typography.bodyMedium
-//            )
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.End
-//            ) {
-//                if(!per.background.value){
-//                    Button(onClick = {
-//
-//                    }) {
-//                        Text(stringResource(R.string.actPage_grant))
-//                    }
-//                }else{
-//                    Button(onClick = {},
-//                        colors = ButtonDefaults.buttonColors(
-//                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-//                            contentColor = MaterialTheme.colorScheme.tertiary,
-//                        )
-//                    ) {
-//                        Text(stringResource(R.string.actPage_ok))
-//                    }
-//                }
-//            }
-//        }
+                        try {
+                            requestPermissions(
+                                activity,
+                                arrayOf(Manifest.permission.USE_FULL_SCREEN_INTENT),
+                                CODE_NOTICE
+                            )
+                        } catch (e: Exception) {
+                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intentB.data = Uri.parse("package:${context.packageName}")
+                            context.startActivity(intentB)
+                        }
 
-        if(per.exactAlarm.value && per.fullScreen.value && per.noticePermission.value && per.openScreen.value){
-            Toast.makeText(context, stringResource(R.string.actPage_ok), Toast.LENGTH_SHORT).show()
-            settingsManager.notFirst()
-            onBack()
+                    }) {
+                        Text(stringResource(R.string.actPage_grant))
+                    }
+                }else{
+                    Button(onClick = {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                        )
+                    ) {
+                        Text(stringResource(R.string.actPage_ok))
+                    }
+                }
+            }
         }
+
+        HorizontalDivider(
+            thickness = 2.dp,
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(vertical = 15.dp)
+        )
+
+        Column(
+            modifier = Modifier
+                .wrapContentHeight()
+                .padding(16.dp)
+                .fillMaxWidth(0.95f)
+        ) {
+            Text(
+                stringResource(R.string.actPage_permission_bg_t),
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                stringResource(R.string.actPage_permission_bg_c),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                if(!per.selfStart.value){
+                    Button(onClick = {
+
+                        try {
+                            val intent = Intent("oppo.safe.permission.startup")
+                            intent.data = android.net.Uri.parse("package:${context?.packageName}")
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intentB.data = Uri.parse("package:${context.packageName}")
+                            context.startActivity(intentB)
+                        }
+
+                    }) {
+                        Text(stringResource(R.string.actPage_grant))
+                    }
+                }else{
+                    Button(onClick = {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                        )
+                    ) {
+                        Text(stringResource(R.string.actPage_ok))
+                    }
+                }
+            }
+        }
+
+        Spacer(Modifier.padding(vertical = 20.dp))
+        Text(stringResource(R.string.actPage_textB))
+        Spacer(Modifier.padding(vertical = 10.dp))
 
         if(settingsManager.isFirst()){
             Row(
