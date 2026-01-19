@@ -91,4 +91,10 @@
     <string name="actPage_select_def_c">Manually grant the necessary permissions and use the system method to achieve ringtone customization for different channels. No additional preparation is required, but the alarm may not work as expected.</string>
     <string name="actPage_select_shizuku_t" translatable="false">Shizuku</string>
     <string name="actPage_select_shizuku_c">Using Shizuku ensures stable software operation. If you know how to use it, it\'s a good thing. However, if you\'re not sure what it is, don\'t click on it.</string>
+    <string name="actPage_shizuku_no">Shizuku is not running</string>
+    <string name="actPage_shizuku_lowV">Please update Shizuku</string>
+    <string name="actPage_shizuku_ok">Back</string>
+    <string name="actPage_shizuku_failed">Failed to grant</string>
+    <string name="actPage_shizuku_check">Grant / Check Permission</string>
+    <string name="actPage_shizuku_finish">Success!</string>
 </resources>

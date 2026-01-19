@@ -1,16 +1,15 @@
 package com.xksyu.mutichannel_alarm
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -20,7 +19,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,16 +31,15 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,9 +49,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.app.AlarmManagerCompat.canScheduleExactAlarms
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.xksyu.mutichannel_alarm.ui.theme.ContrastAwareReplyTheme
-import java.lang.System.exit
-import kotlin.system.exitProcess
+import rikka.shizuku.Shizuku
 
 data class Permission(
     val exactAlarm: MutableState<Boolean> = mutableStateOf(false),
@@ -215,8 +214,96 @@ fun ActivatePageA(context: Context, onBackA: () -> Unit = {}, onBackB: () -> Uni
     BackHandler(enabled = true) {
         onBackA()
     }
+    CheckPermission(context,onBackA,onBackB)
+}
 
+@Composable
+fun CheckPermission(context: Context, onBackA: () -> Unit = {}, onBackB: () -> Unit = {}){
+    var checkFail by remember { mutableStateOf(false) }
+    when(checkPermissionBasic()){
+        -1 -> {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text(stringResource(R.string.actPage_shizuku_no)) },
+                confirmButton = {
+                    Button(onClick = { onBackA() }
+                    ) {
+                        Text(stringResource(R.string.actPage_shizuku_ok))
+                    }
+                }
+            )
+        }
+        -2 -> {
+            AlertDialog(
+                onDismissRequest = { },
+                title = { Text(stringResource(R.string.actPage_shizuku_lowV)) },
+                confirmButton = {
+                    Button(onClick = { onBackA() }
+                    ) {
+                        Text(stringResource(R.string.actPage_shizuku_ok))
+                    }
+                }
+            )
+        }
+        0 -> {
+            val lifecycleOwner = LocalLifecycleOwner.current
+            var isReturnedFromRequest = false
+            DisposableEffect(Unit) {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME && isReturnedFromRequest) {
+                        if (checkPermissionBasic() == 1) {
+                            Toast.makeText(context, R.string.actPage_shizuku_finish, Toast.LENGTH_SHORT).show()
+                            onBackB()
+                        } else { checkFail = true }
+                        isReturnedFromRequest = false
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+                onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+            }
 
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentWidth(Alignment.CenterHorizontally)
+                    .padding(top = 30.dp)
+            ) {
+                Button(
+                    onClick = {
+                        isReturnedFromRequest = true
+                        Shizuku.requestPermission(12345)
+                    }
+                ) {
+                    Text(stringResource(R.string.actPage_shizuku_check))
+                }
+            }
+        }
+        1 -> {
+            Toast.makeText(context, R.string.actPage_shizuku_finish, Toast.LENGTH_SHORT).show()
+            onBackB()
+        }
+    }
+    if(checkFail){
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text(stringResource(R.string.actPage_shizuku_failed)) },
+            confirmButton = {
+                Button(onClick = { onBackA() }
+                ) {
+                    Text(stringResource(R.string.actPage_shizuku_ok))
+                }
+            }
+        )
+    }
+}
+fun checkPermissionBasic(): Int {
+    return if (Shizuku.pingBinder()) {
+        if (Shizuku.isPreV11()) { -2 }
+        else if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) { 1 }
+        else { 0 }
+    }else{ -1 }
 }
 
 @Composable
@@ -227,7 +314,17 @@ fun ActivatePageB (onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: 
     BackHandler(enabled = true) {
         onBackA()
     }
-    //per.exactAlarm.value = true //for debug
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                per.permissionCheck()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     val scrollState = rememberScrollState()
     Column(

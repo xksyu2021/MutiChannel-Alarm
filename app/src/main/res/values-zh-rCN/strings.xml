@@ -86,4 +86,10 @@
     <string name="actPage_select_def_t">默认方法</string>
     <string name="actPage_select_def_c">手动给予必要权限，并使用系统方法达到分通道振铃。不需要额外的准备，但是闹铃可能会不按预期工作。</string>
     <string name="actPage_select_shizuku_c">使用Shizuku使软件稳定运行。如果你知道如何使用，这是个好东西。不过，如果你不清楚这是什么，不要点击。</string>
+    <string name="actPage_shizuku_no">Shizuku未运行</string>
+    <string name="actPage_shizuku_lowV">请升级Shizuku版本</string>
+    <string name="actPage_shizuku_ok">返回</string>
+    <string name="actPage_shizuku_failed">授权失败</string>
+    <string name="actPage_shizuku_check">授予 / 检查权限</string>
+    <string name="actPage_shizuku_finish">成功！</string>
 </resources>
