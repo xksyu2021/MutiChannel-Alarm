@@ -23,23 +23,23 @@
         android:theme="@style/Theme.MutiChannelAlarm">
 
         <activity
-            android:name=".SettingActivity"
+            android:name=".page.SettingActivity"
             android:exported="false" />
         <activity
-            android:name=".AddActivity"
+            android:name=".page.AddActivity"
             android:exported="false" />
         <activity
-            android:name=".AboutActivity"
+            android:name=".page.AboutActivity"
             android:exported="false" />
         <activity
-            android:name=".AlarmGet"
+            android:name=".page.AlarmGet"
             android:exported="false"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
-            android:name=".ActivateActivity"
+            android:name=".page.ActivateActivity"
             android:exported="false" />
 
         <activity
@@ -54,7 +54,7 @@
         </activity>
 
         <receiver
-            android:name=".AlarmReceiver"
+            android:name=".feature.basic.AlarmReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -67,7 +67,7 @@
         </receiver>
 
         <service
-            android:name=".AlarmForegroundService"
+            android:name=".feature.basic.AlarmForegroundService"
             android:exported="false"
             android:foregroundServiceType="specialUse" />
 

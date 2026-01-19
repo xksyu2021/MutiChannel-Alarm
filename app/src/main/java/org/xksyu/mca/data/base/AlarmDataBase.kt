@@ -1,0 +1,26 @@
+package org.xksyu.mca.data.base
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+
+@Database(entities = [AlarmData::class], version = 6)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun AlarmDataDao(): AlarmDataDao
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "alarm_database"
+                ).fallbackToDestructiveMigration(true).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
+}
