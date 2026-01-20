@@ -32,6 +32,8 @@ import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.res.stringResource
@@ -52,6 +54,7 @@ class AlarmGet : ComponentActivity() {
     private val handler = Handler(Looper.getMainLooper())
     private var idleRunnable: Runnable? = null
 
+    @SuppressLint("ServiceCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -107,6 +110,12 @@ class AlarmGet : ComponentActivity() {
         }
         handler.postDelayed(idleRunnable!!, 60 * 1000L)
 
+        val vibrator =  getSystemService(Vibrator::class.java)
+        if(settingsManager.getChanVib() //&& !settingsManager.debugGet()
+            ){
+           vibrator.vibrate(VibrationEffect.createOneShot(60*1000, VibrationEffect.DEFAULT_AMPLITUDE))
+        }
+
         setContent {
             ContrastAwareReplyTheme{
                 if(settingsManager.debugGet()){
@@ -124,6 +133,7 @@ class AlarmGet : ComponentActivity() {
                             notificationManager.cancel(id)
 
                             wakeLock.release()
+                            vibrator.cancel()
 
                             val intent = Intent(this, ActivateActivity::class.java)
                             this.startActivity(intent)
@@ -147,6 +157,7 @@ class AlarmGet : ComponentActivity() {
                             notificationManager.cancel(id)
 
                             wakeLock.release()
+                            vibrator.cancel()
                             finish()
                         },
                         settingsManager = settingsManager,
