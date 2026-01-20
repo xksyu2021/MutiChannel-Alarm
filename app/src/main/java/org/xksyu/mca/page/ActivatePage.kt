@@ -1,12 +1,9 @@
 package org.xksyu.mca.page
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PowerManager
-import android.os.SystemClock
 import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -48,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -61,7 +57,6 @@ import org.xksyu.mca.data.temp.SettingsManager
 import org.xksyu.mca.feature.basic.setAlarm
 import org.xksyu.mca.feature.permission.CheckPermission
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
-import rikka.shizuku.SystemServiceHelper.getSystemService
 
 data class Page(var step: MutableState<Int> = mutableIntStateOf(0))
 class ActivateActivity : ComponentActivity() {

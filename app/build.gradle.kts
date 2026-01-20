@@ -13,8 +13,8 @@ android {
         applicationId = "org.xksyu.mca"
         minSdk = 29
         targetSdk = 36
-        versionCode = 12
-        versionName = "0 build 37 /26.01.19"
+        versionCode = 13
+        versionName = "0 build 38 /26.01.20"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
