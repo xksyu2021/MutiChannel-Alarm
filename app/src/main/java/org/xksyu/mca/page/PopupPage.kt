@@ -42,6 +42,7 @@ import org.xksyu.mca.R
 import org.xksyu.mca.data.temp.SettingsManager
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.base.AlarmViewModelFactory
+import org.xksyu.mca.debug.PopupDebug
 import org.xksyu.mca.feature.basic.setAlarm
 import java.lang.Runnable
 
@@ -87,7 +88,7 @@ class AlarmGet : ComponentActivity() {
             )
             alarmRepeat?.let {
                 if (it.remindTime > 0) {
-                    setAlarm(it, this)
+                    setAlarm(it, this,settingsManager)
                 }
                 it.remindTime -= 1
             }
@@ -108,23 +109,50 @@ class AlarmGet : ComponentActivity() {
 
         setContent {
             ContrastAwareReplyTheme{
-                AlarmGetPage(alarmViewModel = alarmViewModel,
-                    onFinish = {
-                        idleRunnable?.let { handler.removeCallbacks(it) }
-                        alarmViewModel.alarmById.value?.let {
-                            if(it.isRepeat) alarmViewModel.delete(it)
-                        }
-                        val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                        val serviceIntent = Intent(this, AlarmForegroundService::class.java)
-                        this.stopService(serviceIntent)
-                        notificationManager.cancel(id)
+                if(settingsManager.debugGet()){
+                    PopupDebug(
+                        alarmViewModel = alarmViewModel,
+                        onFinish = {
+                            idleRunnable?.let { handler.removeCallbacks(it) }
+                            alarmViewModel.alarmById.value?.let {
+                                if (it.isRepeat) alarmViewModel.delete(it)
+                            }
+                            val notificationManager =
+                                this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                            val serviceIntent = Intent(this, AlarmForegroundService::class.java)
+                            this.stopService(serviceIntent)
+                            notificationManager.cancel(id)
 
-                        wakeLock.release()
-                        finish()
-                    },
-                    settingsManager = settingsManager,
-                    context = this
-                )
+                            wakeLock.release()
+
+                            val intent = Intent(this, ActivateActivity::class.java)
+                            this.startActivity(intent)
+                            finish()
+                        },
+                        settingsManager = settingsManager,
+                        context = this
+                    )
+                }else {
+                    AlarmGetPage(
+                        alarmViewModel = alarmViewModel,
+                        onFinish = {
+                            idleRunnable?.let { handler.removeCallbacks(it) }
+                            alarmViewModel.alarmById.value?.let {
+                                if (it.isRepeat) alarmViewModel.delete(it)
+                            }
+                            val notificationManager =
+                                this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                            val serviceIntent = Intent(this, AlarmForegroundService::class.java)
+                            this.stopService(serviceIntent)
+                            notificationManager.cancel(id)
+
+                            wakeLock.release()
+                            finish()
+                        },
+                        settingsManager = settingsManager,
+                        context = this
+                    )
+                }
             }
         }
     }
@@ -156,7 +184,7 @@ fun AlarmGetPage(alarmViewModel: AlarmViewModel, onFinish: () -> Unit = {}, sett
                     temp.minute.value = it.timeMinute
 
                     println("====== Call setAlarm for next day BEGIN ======")
-                    if(!it.isRepeat && it.autoWeek!=0) setAlarm(it, context)
+                    if(!it.isRepeat && it.autoWeek!=0) setAlarm(it, context,settingsManager)
                     println("====== Call setAlarm for next day FINISHED ======")
 
                     println("****** GetValue Count ******")
@@ -196,7 +224,7 @@ fun AlarmGetPage(alarmViewModel: AlarmViewModel, onFinish: () -> Unit = {}, sett
                         id = settingsManager.updateId(),
                         isRepeat = true, autoWeek = 0
                     )
-                    setAlarm(repeatAlarm, context)
+                    setAlarm(repeatAlarm, context,settingsManager)
                     alarmViewModel.insert(repeatAlarm)
                 }
                 onFinish()

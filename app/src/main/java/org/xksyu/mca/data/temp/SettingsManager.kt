@@ -1,5 +1,6 @@
 package org.xksyu.mca.data.temp
 
+import android.R
 import android.content.Context
 import android.content.SharedPreferences
 
@@ -12,6 +13,7 @@ class SettingsManager(private val context: Context?) {
         private const val IS_FIRST = "first_use"
         private const val LANG = "language" //auto=0 zh=1 en=2
         private const val WAY = "ways" //shizuku=1 def=2
+        private const val DEBUG = "developer mode"
     }
 
     private val sharedPref: SharedPreferences? =
@@ -53,10 +55,18 @@ class SettingsManager(private val context: Context?) {
     }
 
     fun waySet(way: Int){
-        sharedPref?.edit()?.putInt(LANG, way)?.apply()
+        sharedPref?.edit()?.putInt(WAY, way)?.apply()
     }
     fun wayGet(): Int{
         val way = sharedPref?.getInt(WAY, 2) ?: 2
+        return way
+    }
+
+    fun debugSet(mode : Boolean){
+        sharedPref?.edit()?.putBoolean(DEBUG, mode)?.apply()
+    }
+    fun debugGet(): Boolean{
+        val way = sharedPref?.getBoolean(DEBUG, false) ?: false
         return way
     }
 }

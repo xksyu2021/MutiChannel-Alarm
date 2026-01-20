@@ -68,27 +68,27 @@
     <string name="actPage_onBack_back">Homepage</string>
     <string name="actPage_onBack_continue">Continue</string>
     <string name="actPage_text">These permissions are absolutely necessary for the software to operate. Without these permissions, the alarm clock will not ring or provide reminders. These permissions will not steal your private content.</string>
-    <string name="actPage_textB">Additionally, due to different designs by phone manufacturers, some permissions may not be able to jump normally after clicking the button and require manual settings. Some phones may also require additional permissions. If necessary, please manually grant permissions such as \"Ignore Battery Optimization\" to ensure the alarm task runs and pop-ups succeed.</string>
+    <string name="actPage_textB">Have problems?</string>
     <string name="actPage_grant">Grant</string>
     <string name="actPage_permission_ea_t">Exact alarm permission</string>
-    <string name="actPage_permission_ea_c">Enable the software to set alarms</string>
+    <string name="actPage_permission_ea_c">Enable this app to set alarms</string>
     <string name="actPage_permission_notice_t">Notification permission</string>
-    <string name="actPage_permission_notice_c">Enable the alarm clock to display and ring.\n It is recommended to enable \"Top Notifications\", \"Lock Screen Notifications\", and \"Banner Notifications\".</string>
+    <string name="actPage_permission_notice_c">The basic permission enabling to send notifications at the set time.\n\"Lock screen\"(IMPORTANT!) and \"Banner\"\"Pin to top\" is needed.</string>
     <string name="actPage_permission_ls_t">Lock screen cover</string>
-    <string name="actPage_permission_ls_c">Enable the alarm to perform a screen-on reminder</string>
+    <string name="actPage_permission_ls_c">"Enable this app to ring and pop up notification page like system alarm app. "</string>
     <string name="actPage_ok">Granted</string>
     <string name="actPage_permission_bg_t">Self-starting</string>
     <string name="actPage_permission_bg_c">Enable the alarm clock to continue running even after the program exits</string>
-    <string name="actPage_permission_fn_t">Send full-screen notifications</string>
-    <string name="actPage_permission_fn_c">Enable the alarm to pop up the reminder page</string>
+    <string name="actPage_permission_fn_t">Full-screen notifications</string>
+    <string name="actPage_permission_fn_c">Works similar as \"Lock screen cover\"</string>
     <string name="addPage_delete_title">Delete</string>
     <string name="notice">alarm notification</string>
-    <string name="actPage_next">Finish</string>
+    <string name="actPage_next">Next</string>
     <string name="notice_title">Alarm</string>
     <string name="notice_stop">Stop</string>
     <string name="notice_later">Ring Later</string>
     <string name="actPage_select_def_t">Default Ways</string>
-    <string name="actPage_select_def_c">Manually grant the necessary permissions and use the system method to achieve ringtone customization for different channels. No additional preparation is required, but the alarm may not work as expected.</string>
+    <string name="actPage_select_def_c">Use the system method to achieve ringtone customization for different channels. No additional preparation is required, but the alarm may not work as expected.</string>
     <string name="actPage_select_shizuku_t" translatable="false">Shizuku</string>
     <string name="actPage_select_shizuku_c">Using Shizuku ensures stable software operation. If you know how to use it, it\'s a good thing. However, if you\'re not sure what it is, don\'t click on it.</string>
     <string name="actPage_shizuku_no">Shizuku is not running</string>
@@ -97,4 +97,11 @@
     <string name="actPage_shizuku_failed">Failed to grant</string>
     <string name="actPage_shizuku_check">Grant / Check Permission</string>
     <string name="actPage_shizuku_finish">Success!</string>
+    <string name="actPage_permission_only">Following permissions are only needed on certain devices. If required, set it mannually. \nClick \"Have problem\" on the bottom if you need.</string>
+    <string name="actPage_permission_lc_text">Important: \nPerform it after all other permissions have been successfully granted.\nAfter pressing \"Start\", immediately turn off the phone screen and then turn it back on. Tap on the notification on the lock screen, unlock the phone, and wait for the permission request window to appear.</string>
+    <string name="actPage_permission_lc_back">Back</string>
+    <string name="actPage_permission_lc_start">Start</string>
+    <string name="debug_alarmData" translatable="false">id = %1$d\nname = %2$s | hour = %3$d | minute = %4$d\nweekSelect = %5$d | repeat = %6$b \nrepeatTime = %7$d | repeatMinute = %8$d\nisRepeat = %9$b</string>
+    <string name="debug_grant">"If you are granting permissions, press this button to continue. "</string>
+    <string name="settingPage_debug" translatable="false">DebugMode</string>
 </resources>

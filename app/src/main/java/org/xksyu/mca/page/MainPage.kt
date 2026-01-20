@@ -126,7 +126,7 @@ fun MainPage(settingsManager : SettingsManager, alarmViewModel: AlarmViewModel, 
         ) {
             when(showPage){
                 1 -> ChannelPage(settingsManager = settingsManager)
-                else -> AlarmPage(alarmViewModel = alarmViewModel,context = context)
+                else -> AlarmPage(alarmViewModel = alarmViewModel,context = context,settingsManager)
             }
         }
     }
@@ -189,7 +189,7 @@ fun TopMenu(context: Context? = null)
 //alarmPage
 @SuppressLint("ComposableNaming", "DefaultLocale")
 @Composable
-fun AlarmPage(alarmViewModel: AlarmViewModel, context: Context? = null){
+fun AlarmPage(alarmViewModel: AlarmViewModel, context: Context? = null,settingsManager: SettingsManager){
     val scrollState = rememberScrollState()
     val alarms by remember { alarmViewModel.alarms }.collectAsState(initial = emptyList())
     val weekName = arrayOf(stringResource(R.string.dayOfWeek_1),stringResource(R.string.dayOfWeek_2),stringResource(R.string.dayOfWeek_3),stringResource(R.string.dayOfWeek_4),stringResource(R.string.dayOfWeek_5),stringResource(R.string.dayOfWeek_6),stringResource(R.string.dayOfWeek_7))
@@ -293,7 +293,7 @@ fun AlarmPage(alarmViewModel: AlarmViewModel, context: Context? = null){
                                 open = !open
                                 context?.let {
                                     if (open) {
-                                        setAlarm(alarm, it)
+                                        setAlarm(alarm, it, settingsManager)
                                     } else {
                                         cancelAlarm(alarm, it)
                                     }

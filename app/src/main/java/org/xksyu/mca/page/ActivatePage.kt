@@ -4,13 +4,16 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
+import android.os.PowerManager
+import android.os.SystemClock
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,63 +39,77 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import org.xksyu.mca.MainActivity
 import org.xksyu.mca.R
+import org.xksyu.mca.data.base.AlarmData
 import org.xksyu.mca.data.temp.Permission
 import org.xksyu.mca.data.temp.SettingsManager
+import org.xksyu.mca.feature.basic.setAlarm
 import org.xksyu.mca.feature.permission.CheckPermission
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
+import rikka.shizuku.SystemServiceHelper.getSystemService
 
-data class Page(var step: MutableState<Int> = mutableStateOf(0))
+data class Page(var step: MutableState<Int> = mutableIntStateOf(0))
 class ActivateActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settingsManager = SettingsManager(this)
         enableEdgeToEdge()
-        var page = Page()
+        val page = Page()
         setContent {
             ContrastAwareReplyTheme{
                 when(page.step.value) {
-                    0 -> ActivatePageGuide(
-                            onBack = {
-                                settingsManager.notFirst()
-                                finish()
-                            },
-                            context = this, settingsManager, page = page
-                        )
-                    1 -> {ActivatePageA(
+                    0 -> ActivatePageA(
                         onBackA = {
-                            page.step.value = 0
-                        },
-                        onBackB = {
-                            settingsManager.notFirst()
-                            settingsManager.waySet(1)
                             finish()
                         },
-                        context = this)
-                    }
-                    2 -> ActivatePageB(
+                        onBackB = {
+                            page.step.value = 1
+                        },
+                        context = this, activity = this, settingsManager)
+                    1 -> ActivatePageGuide(
                         onBackA = {
                             page.step.value = 0
                         },
                         onBackB = {
                             settingsManager.notFirst()
                             settingsManager.waySet(2)
+                            Toast.makeText(this, R.string.actPage_shizuku_finish, Toast.LENGTH_SHORT).show()
                             finish()
+                            val intent = Intent(this, MainActivity::class.java)
+                            this.startActivity(intent)
                         },
-                        context = this, activity = this
-                    )
+                        context = this, settingsManager, page = page)
+                    2 -> {ActivatePageShizuku(
+                        onBackA = {
+                            page.step.value = 1
+                            settingsManager.debugSet(false)
+                        },
+                        onBackB = {
+                            settingsManager.notFirst()
+                            settingsManager.waySet(1)
+                            settingsManager.debugSet(false)
+                            finish()
+                            val intent = Intent(this, MainActivity::class.java)
+                            this.startActivity(intent)
+                        },
+                        context = this)
+                    }
                 }
             }
         }
@@ -100,35 +117,7 @@ class ActivateActivity : ComponentActivity() {
 }
 
 @Composable
-fun ActivatePageGuide(onBack: () -> Unit = {}, context: Context, settingsManager: SettingsManager, page: Page) {
-    var showCheck by remember { mutableStateOf(false) }
-    BackHandler(enabled = settingsManager.isFirst()) {
-        showCheck = true
-    }
-    if (showCheck) {
-        AlertDialog(
-            onDismissRequest = { },
-            title = { Text(stringResource(R.string.actPage_onBack_title)) },
-            text = {
-                Text(stringResource(R.string.actPage_onBack_text))
-            },
-            dismissButton = {
-                OutlinedButton(onClick = { showCheck = false }) {
-                    Text(stringResource(R.string.actPage_onBack_continue))
-                }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    showCheck = false
-                    onBack()
-                }
-                ) {
-                    Text(stringResource(R.string.actPage_onBack_back))
-                }
-            }
-        )
-    }
-
+fun ActivatePageGuide(onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: Context, settingsManager: SettingsManager, page: Page) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -137,11 +126,13 @@ fun ActivatePageGuide(onBack: () -> Unit = {}, context: Context, settingsManager
             .wrapContentWidth(Alignment.CenterHorizontally)
             .padding(top = 30.dp)
     ){
+        BackHandler(enabled = true) {
+            onBackA()
+        }
+
         Card(
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
-            onClick = {
-                page.step.value = 2
-            },
+            onClick = onBackB,
             modifier = Modifier
                 .fillMaxWidth(0.95f)
                 .padding(vertical = 8.dp)
@@ -165,7 +156,7 @@ fun ActivatePageGuide(onBack: () -> Unit = {}, context: Context, settingsManager
         Card(
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiaryContainer),
             onClick = {
-                page.step.value = 1
+                page.step.value = 2
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)
@@ -191,7 +182,7 @@ fun ActivatePageGuide(onBack: () -> Unit = {}, context: Context, settingsManager
 }
 
 @Composable
-fun ActivatePageA(context: Context, onBackA: () -> Unit = {}, onBackB: () -> Unit = {}){
+fun ActivatePageShizuku(context: Context, onBackA: () -> Unit = {}, onBackB: () -> Unit = {}){
     BackHandler(enabled = true) {
         onBackA()
     }
@@ -199,12 +190,36 @@ fun ActivatePageA(context: Context, onBackA: () -> Unit = {}, onBackB: () -> Uni
 }
 
 @Composable
-fun ActivatePageB (onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: Context, activity: Activity) {
+fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: Context, activity: Activity,settingsManager : SettingsManager) {
     val per = Permission(context = context)
     per.permissionCheck()
 
-    BackHandler(enabled = true) {
-        onBackA()
+    var showCheck by remember { mutableStateOf(false) }
+    BackHandler(enabled = settingsManager.isFirst()) {
+        showCheck = true
+    }
+    if (showCheck) {
+        AlertDialog(
+            onDismissRequest = { },
+            title = { Text(stringResource(R.string.actPage_onBack_title)) },
+            text = {
+                Text(stringResource(R.string.actPage_onBack_text))
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showCheck = false }) {
+                    Text(stringResource(R.string.actPage_onBack_continue))
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showCheck = false
+                    onBackA()
+                }
+                ) {
+                    Text(stringResource(R.string.actPage_onBack_back))
+                }
+            }
+        )
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -251,7 +266,7 @@ fun ActivatePageB (onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: 
                 if(!per.exactAlarm.value) {
                     Button(onClick = {
                         val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                        intent.data = Uri.parse("package:${context?.packageName}")
+                        intent.data = "package:${context.packageName}".toUri()
                         context.startActivity(intent)
                     }) {
                         Text(stringResource(R.string.actPage_grant))
@@ -322,61 +337,76 @@ fun ActivatePageB (onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: 
                 }
             }
         }
+
         HorizontalDivider(
             thickness = 2.dp,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
                 .padding(vertical = 15.dp)
         )
+
 
         Column(
             modifier = Modifier
                 .wrapContentHeight()
                 .padding(16.dp)
-                .fillMaxWidth(0.95f)
+                .fillMaxWidth()
         ) {
             Text(
-                stringResource(R.string.actPage_permission_fn_t),
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Text(
-                stringResource(R.string.actPage_permission_fn_c),
+                stringResource(R.string.actPage_permission_only),
                 style = MaterialTheme.typography.bodyMedium
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                if(!per.fullScreen.value){
-                    Button(onClick = {
-
-                        try {
-                            val intent = Intent().apply {
-                                action = Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT
-                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                            }
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intentB.data = Uri.parse("package:${context.packageName}")
-                            context.startActivity(intentB)
-                        }
-
-                    }) {
-                        Text(stringResource(R.string.actPage_grant))
-                    }
-                }else{
-                    Button(onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                        )
+            Spacer(Modifier.padding(vertical = 8.dp))
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)){
+                Card(modifier = Modifier
+                    .padding(5.dp)
+                    .background(Color.Transparent),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                ){
+                    Text(
+                        stringResource(R.string.actPage_permission_bg_t),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Text(
+                        stringResource(R.string.actPage_permission_bg_c),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        stringResource(R.string.actPage_permission_fn_t),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Text(
+                        stringResource(R.string.actPage_permission_fn_c),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
                     ) {
-                        Text(stringResource(R.string.actPage_ok))
+                        Button(
+                            onClick = {
+                                openUrl(context = context,url = "https://xksyu.online")
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                contentColor = MaterialTheme.colorScheme.error,
+                            )
+                        ) {
+                            Text(stringResource(R.string.actPage_textB))
+                        }
+                        Spacer(modifier = Modifier.padding(horizontal = 5.dp))
+                        OutlinedButton(onClick = {
+                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intentB.data = "package:${context.packageName}".toUri()
+                            context.startActivity(intentB)
+                        }) {
+                            Text(stringResource(R.string.actPage_grant))
+                        }
                     }
                 }
             }
         }
+
         HorizontalDivider(
             thickness = 2.dp,
             modifier = Modifier
@@ -384,6 +414,7 @@ fun ActivatePageB (onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: 
                 .padding(vertical = 15.dp)
         )
 
+        var show by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
                 .wrapContentHeight()
@@ -404,20 +435,7 @@ fun ActivatePageB (onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: 
             ) {
                 if(!per.lockScreen.value){
                     Button(onClick = {
-                        val CODE_NOTICE = 1001
-
-                        try {
-                            requestPermissions(
-                                activity,
-                                arrayOf(Manifest.permission.USE_FULL_SCREEN_INTENT),
-                                CODE_NOTICE
-                            )
-                        } catch (e: Exception) {
-                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intentB.data = Uri.parse("package:${context.packageName}")
-                            context.startActivity(intentB)
-                        }
-
+                        show = true
                     }) {
                         Text(stringResource(R.string.actPage_grant))
                     }
@@ -433,64 +451,29 @@ fun ActivatePageB (onBackA: () -> Unit = {}, onBackB: () -> Unit = {}, context: 
                 }
             }
         }
-
-        HorizontalDivider(
-            thickness = 2.dp,
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .padding(vertical = 15.dp)
-        )
-
-        Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .padding(16.dp)
-                .fillMaxWidth(0.95f)
-        ) {
-            Text(
-                stringResource(R.string.actPage_permission_bg_t),
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Text(
-                stringResource(R.string.actPage_permission_bg_c),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                if(!per.selfStart.value){
+        if(show){
+            AlertDialog(
+                onDismissRequest = { },
+                text = { Text(stringResource(R.string.actPage_permission_lc_text)) },
+                dismissButton = {
+                    OutlinedButton(onClick = {
+                        show = false
+                    }
+                    ) { Text(stringResource(R.string.actPage_permission_lc_back)) }
+                },
+                confirmButton = {
                     Button(onClick = {
-
-                        try {
-                            val intent = Intent(Settings.ACTION_SETTINGS)
-                            intent.data = Uri.parse("package:${context?.packageName}")
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intentB.data = Uri.parse("package:${context.packageName}")
-                            context.startActivity(intentB)
-                        }
-
-                    }) {
-                        Text(stringResource(R.string.actPage_grant))
+                        show = false
+                        settingsManager.debugSet(true)
+                        val alarm = AlarmData(settingsManager.updateId(),"Click",0,0,0,0,false,0,0,true,true)
+                        setAlarm(alarm,context,settingsManager)
                     }
-                }else{
-                    Button(onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                        )
-                    ) {
-                        Text(stringResource(R.string.actPage_ok))
-                    }
+                    ) { Text(stringResource(R.string.actPage_permission_lc_start)) }
                 }
-            }
+            )
         }
 
-        Spacer(Modifier.padding(vertical = 20.dp))
-        Text(stringResource(R.string.actPage_textB))
-        Spacer(Modifier.padding(vertical = 10.dp))
+        Spacer(Modifier.padding(vertical = 8.dp))
 
         Row(
             modifier = Modifier

@@ -95,7 +95,7 @@ class AddActivity : ComponentActivity() {
                     },
                     onSave = {
                         if(isEdit){
-                            if(onSaveEdit(tempDB, alarmViewModel, this)) { finish() }
+                            if(onSaveEdit(tempDB, alarmViewModel, this,settingsManager)) { finish() }
                         }else{
                             if(onSave(tempDB, alarmViewModel, this, settingsManager)) { finish() }
                         }

@@ -10,9 +10,7 @@ import androidx.core.app.AlarmManagerCompat.canScheduleExactAlarms
 data class Permission(
     val exactAlarm: MutableState<Boolean> = mutableStateOf(false),
     val noticePermission: MutableState<Boolean> = mutableStateOf(false),
-    val fullScreen: MutableState<Boolean> = mutableStateOf(false),
     val lockScreen: MutableState<Boolean> = mutableStateOf(false),
-    val selfStart: MutableState<Boolean> = mutableStateOf(false),
     val context: Context
 ){
     fun permissionCheck(){

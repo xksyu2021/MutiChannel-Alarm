@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -89,16 +90,49 @@ fun SettingPage(onBack: () -> Unit = {},context: Context? = null,settingsManager
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Language(settingsManager = settingsManager)
+            Language(settingsManager)
             HorizontalDivider(
                 thickness = 2.dp,
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .padding(top = 10.dp)
             )
+            Debug(settingsManager)
         }
     }
 }
+
+@Composable
+fun Debug(settingsManager: SettingsManager){
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .padding(top = 10.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(stringResource(R.string.settingPage_debug))
+        }
+        var debug by remember { mutableStateOf(settingsManager.debugGet()) }
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = debug,
+                onCheckedChange = {
+                    debug = it
+                    settingsManager.debugSet(debug)
+                }
+            )
+        }
+    }
+}
+
 
 @Composable
 fun Language(settingsManager: SettingsManager){
