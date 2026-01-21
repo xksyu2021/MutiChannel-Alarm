@@ -1,6 +1,7 @@
 package org.xksyu.mca.debug
 
 import android.content.Context
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +34,7 @@ import org.xksyu.mca.data.temp.SettingsManager
 import org.xksyu.mca.feature.basic.setAlarm
 
 @Composable
-fun PopupDebug(alarmViewModel: AlarmViewModel, onFinish: () -> Unit = {}, settingsManager: SettingsManager, context: Context){
+fun PopupDebug(alarmViewModel: AlarmViewModel, onFinish: (grantValue: Boolean) -> Unit = {}, settingsManager: SettingsManager, context: Context,intent: Intent){
     BackHandler(true) { }
     Scaffold(
         modifier = Modifier
@@ -65,14 +66,28 @@ fun PopupDebug(alarmViewModel: AlarmViewModel, onFinish: () -> Unit = {}, settin
                     ) {
                         ElevatedButton(
                             onClick = {
-                                onFinish()
+                                onFinish(true)
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                                 contentColor = MaterialTheme.colorScheme.tertiary,
                             )
                         ) {
-                            Text(stringResource(R.string.actPage_grant))
+                            Text(stringResource(R.string.debug_grantSuccess))
+                        }
+                    }
+                    Spacer(Modifier.padding(vertical = 20.dp))
+                    Text(stringResource(R.string.debug_grantFailed) )
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(end=5.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        ElevatedButton(
+                            onClick = {
+                                onFinish(false)
+                            },
+                        ) {
+                            Text(stringResource(R.string.actPage_permission_lc_back))
                         }
                     }
                 }
@@ -103,11 +118,11 @@ fun PopupDebug(alarmViewModel: AlarmViewModel, onFinish: () -> Unit = {}, settin
                         setAlarm(repeatAlarm, context, settingsManager)
                         alarmViewModel.insert(repeatAlarm)
                     }
-                    onFinish()
+                    onFinish(false)
                 }
                 ) { Text(text = "AGAIN") }
                 Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                OutlinedButton(onClick = onFinish) { Text(text = "OFF") }
+                OutlinedButton(onClick = { onFinish(false) }) { Text(text = "OFF") }
             }
         }
     }

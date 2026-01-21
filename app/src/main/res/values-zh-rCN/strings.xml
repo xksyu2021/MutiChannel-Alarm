@@ -74,7 +74,7 @@
     <string name="actPage_permission_ls_c">使本软件可以像系统闹钟软件一样全屏提醒和振铃。</string>
     <string name="actPage_ok">已授予</string>
     <string name="actPage_permission_bg_t">自启动</string>
-    <string name="actPage_permission_bg_c">使闹钟在程序退出后依然可以运行</string>
+    <string name="actPage_permission_bg_c">使闹钟在程序退出后仍可运行</string>
     <string name="actPage_permission_fn_t">发送全屏通知</string>
     <string name="actPage_permission_fn_c">与“锁屏显示”类似</string>
     <string name="addPage_delete_title">删除</string>
@@ -92,9 +92,11 @@
     <string name="actPage_shizuku_failed">授权失败</string>
     <string name="actPage_shizuku_check">授予 / 检查权限</string>
     <string name="actPage_shizuku_finish">成功！</string>
-    <string name="actPage_permission_only">仅特定设备需要。如果您的手机需要此功能，请手动设置。\n如遇到问题，请点击下方的“遇到问题”按钮。</string>
+    <string name="actPage_permission_only">仅特定设备需要。\n如果您的手机需要此功能，请手动设置。\n如遇到问题，请点击下方的“遇到问题”按钮。</string>
     <string name="actPage_permission_lc_text">重要：\n在其他权限全部授权成功后再进行。\n按下“开始”后，立刻关闭手机屏幕，再点亮屏幕。点击锁屏上的通知，再解锁手机，等待权限申请窗口出现。</string>
     <string name="actPage_permission_lc_back">返回</string>
     <string name="actPage_permission_lc_start">开始</string>
-    <string name="debug_grant">如果你正在授权，点击此按钮继续。</string>
+    <string name="debug_grant">如果此页面在锁屏后直接点亮了屏幕，或者你在刚刚弹出的系统对话框内进行了授权，点此按钮继续。</string>
+    <string name="debug_grantFailed">其他情况下，授权失败，请重试。</string>
+    <string name="debug_grantSuccess">完成</string>
 </resources>

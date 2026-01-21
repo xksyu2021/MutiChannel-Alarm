@@ -1,6 +1,5 @@
 package org.xksyu.mca.data.temp
 
-import android.R
 import android.content.Context
 import android.content.SharedPreferences
 

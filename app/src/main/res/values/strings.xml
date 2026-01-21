@@ -102,6 +102,8 @@
     <string name="actPage_permission_lc_back">Back</string>
     <string name="actPage_permission_lc_start">Start</string>
     <string name="debug_alarmData" translatable="false">id = %1$d\nname = %2$s | hour = %3$d | minute = %4$d\nweekSelect = %5$d | repeat = %6$b \nrepeatTime = %7$d | repeatMinute = %8$d\nisRepeat = %9$b</string>
-    <string name="debug_grant">"If you are granting permissions, press this button to continue. "</string>
+    <string name="debug_grant">If this page pop up directly after you locked your phone, or you have granted the permission from a system dialog just now, continue.</string>
     <string name="settingPage_debug" translatable="false">DebugMode</string>
+    <string name="debug_grantFailed">In other cases, authorization failed. Please try again.</string>
+    <string name="debug_grantSuccess">Finish</string>
 </resources>

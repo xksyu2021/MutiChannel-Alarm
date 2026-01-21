@@ -66,17 +66,22 @@ class ActivateActivity : ComponentActivity() {
         settingsManager = SettingsManager(this)
         enableEdgeToEdge()
         val page = Page()
+        val per = Permission(context = this)
+        per.permissionCheck()
+
         setContent {
             ContrastAwareReplyTheme{
                 when(page.step.value) {
                     0 -> ActivatePageA(
                         onBackA = {
+                            settingsManager.debugSet(false)
                             finish()
                         },
                         onBackB = {
+                            settingsManager.debugSet(false)
                             page.step.value = 1
                         },
-                        context = this, activity = this, settingsManager)
+                        context = this, activity = this, settingsManager = settingsManager, intent = intent, per = per)
                     1 -> ActivatePageGuide(
                         onBackA = {
                             page.step.value = 0
@@ -185,9 +190,11 @@ fun ActivatePageShizuku(context: Context, onBackA: () -> Unit = {}, onBackB: () 
 }
 
 @Composable
-fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: Context, activity: Activity,settingsManager : SettingsManager) {
-    val per = Permission(context = context)
-    per.permissionCheck()
+fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: Context, activity: Activity,settingsManager : SettingsManager,intent : Intent,per: Permission) {
+
+    // 使用 remember 包装外部状态
+    val lockScreenState = remember { per.lockScreen }
+    val lockScreen by lockScreenState
 
     var showCheck by remember { mutableStateOf(false) }
     BackHandler(enabled = settingsManager.isFirst()) {
@@ -262,12 +269,15 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                     Button(onClick = {
                         val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                         intent.data = "package:${context.packageName}".toUri()
+                        intent.putExtra("GRANT", true)
                         context.startActivity(intent)
                     }) {
                         Text(stringResource(R.string.actPage_grant))
                     }
                 }else{
-                    Button(onClick = {},
+                    Button(onClick = {
+                        intent.putExtra("GRANT", true)
+                    },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                             contentColor = MaterialTheme.colorScheme.tertiary,
@@ -340,6 +350,7 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                 .padding(vertical = 15.dp)
         )
 
+        var show by remember { mutableStateOf(false) }
 
         Column(
             modifier = Modifier
@@ -358,94 +369,100 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                     .background(Color.Transparent),
                     colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                 ){
-                    Text(
-                        stringResource(R.string.actPage_permission_bg_t),
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    Text(
-                        stringResource(R.string.actPage_permission_bg_c),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        stringResource(R.string.actPage_permission_fn_t),
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    Text(
-                        stringResource(R.string.actPage_permission_fn_c),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        Button(
-                            onClick = {
-                                openUrl(context = context,url = "https://xksyu.online")
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer,
-                                contentColor = MaterialTheme.colorScheme.error,
-                            )
-                        ) {
-                            Text(stringResource(R.string.actPage_textB))
-                        }
-                        Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                        OutlinedButton(onClick = {
-                            val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intentB.data = "package:${context.packageName}".toUri()
-                            context.startActivity(intentB)
-                        }) {
-                            Text(stringResource(R.string.actPage_grant))
-                        }
-                    }
-                }
-            }
-        }
-
-        HorizontalDivider(
-            thickness = 2.dp,
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-                .padding(vertical = 15.dp)
-        )
-
-        var show by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .padding(16.dp)
-                .fillMaxWidth(0.95f)
-        ) {
-            Text(
-                stringResource(R.string.actPage_permission_ls_t),
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Text(
-                stringResource(R.string.actPage_permission_ls_c),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                if(!per.lockScreen.value){
-                    Button(onClick = {
-                        show = true
-                    }) {
-                        Text(stringResource(R.string.actPage_grant))
-                    }
-                }else{
-                    Button(onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentColor = MaterialTheme.colorScheme.tertiary,
+                    Column(modifier = Modifier
+                        .wrapContentHeight()
+                        .padding(16.dp)
+                        .fillMaxWidth(0.95f)){
+                        Text(
+                            stringResource(R.string.actPage_permission_bg_t),
+                            style = MaterialTheme.typography.headlineSmall
                         )
+                        Text(
+                            stringResource(R.string.actPage_permission_bg_c),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Text(
+                            stringResource(R.string.actPage_permission_fn_t),
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                        Text(
+                            stringResource(R.string.actPage_permission_fn_c),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Button(
+                                onClick = {
+                                    openUrl(context = context, url = "https://xksyu.online")
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.error,
+                                )
+                            ) {
+                                Text(stringResource(R.string.actPage_textB))
+                            }
+                            Spacer(modifier = Modifier.padding(horizontal = 5.dp))
+                            OutlinedButton(onClick = {
+                                val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                intentB.data = "package:${context.packageName}".toUri()
+                                context.startActivity(intentB)
+                            }) {
+                                Text(stringResource(R.string.actPage_grant))
+                            }
+                        }
+                    }
+
+                    HorizontalDivider(
+                        thickness = 2.dp,
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .padding(vertical = 15.dp)
+                    )
+
+
+                    Column(
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .padding(16.dp)
+                            .fillMaxWidth(0.95f)
                     ) {
-                        Text(stringResource(R.string.actPage_ok))
+                        Text(
+                            stringResource(R.string.actPage_permission_ls_t),
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                        Text(
+                            stringResource(R.string.actPage_permission_ls_c),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            if(!lockScreen){
+                                Button(onClick = {
+                                    show = true
+                                }) {
+                                    Text(stringResource(R.string.actPage_grant))
+                                }
+                            }else{
+                                Button(onClick = {},
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.tertiary,
+                                    )
+                                ) {
+                                    Text(stringResource(R.string.actPage_ok))
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
+
         if(show){
             AlertDialog(
                 onDismissRequest = { },
@@ -462,6 +479,10 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                         settingsManager.debugSet(true)
                         val alarm = AlarmData(settingsManager.updateId(),"Click",0,0,0,0,false,0,0,true,true)
                         setAlarm(alarm,context,settingsManager)
+
+                        if (intent.getBooleanExtra("GRANT",false)){
+                            per.lockScreen.value = true
+                        }
                     }
                     ) { Text(stringResource(R.string.actPage_permission_lc_start)) }
                 }

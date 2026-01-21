@@ -34,6 +34,7 @@ import android.os.Looper
 import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.provider.Settings
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.res.stringResource
@@ -111,7 +112,7 @@ class AlarmGet : ComponentActivity() {
         handler.postDelayed(idleRunnable!!, 60 * 1000L)
 
         val vibrator =  getSystemService(Vibrator::class.java)
-        if(settingsManager.getChanVib() //&& !settingsManager.debugGet()
+        if(settingsManager.getChanVib() && !settingsManager.debugGet()
             ){
            vibrator.vibrate(VibrationEffect.createOneShot(60*1000, VibrationEffect.DEFAULT_AMPLITUDE))
         }
@@ -121,7 +122,7 @@ class AlarmGet : ComponentActivity() {
                 if(settingsManager.debugGet()){
                     PopupDebug(
                         alarmViewModel = alarmViewModel,
-                        onFinish = {
+                        onFinish = { grantValue ->
                             idleRunnable?.let { handler.removeCallbacks(it) }
                             alarmViewModel.alarmById.value?.let {
                                 if (it.isRepeat) alarmViewModel.delete(it)
@@ -136,11 +137,13 @@ class AlarmGet : ComponentActivity() {
                             vibrator.cancel()
 
                             val intent = Intent(this, ActivateActivity::class.java)
+                            intent.putExtra("GRANT", grantValue)
                             this.startActivity(intent)
                             finish()
                         },
                         settingsManager = settingsManager,
-                        context = this
+                        context = this,
+                        intent = intent
                     )
                 }else {
                     AlarmGetPage(
