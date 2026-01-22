@@ -2,7 +2,6 @@ package org.xksyu.mca.page
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -34,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import org.xksyu.mca.R
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
@@ -124,7 +124,7 @@ fun AboutPage(onBack: () -> Unit = {},version : String? = "null",context: Contex
 fun openUrl(context: Context? = null, url: String) {
     val intent = Intent(Intent.ACTION_VIEW).apply {
         addCategory(Intent.CATEGORY_BROWSABLE)
-        data = Uri.parse(url)
+        data = url.toUri()
     }
     context?.startActivity(intent)
 }

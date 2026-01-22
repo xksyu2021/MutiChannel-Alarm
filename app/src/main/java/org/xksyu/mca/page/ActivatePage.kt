@@ -3,6 +3,7 @@ package org.xksyu.mca.page
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
@@ -52,9 +53,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.xksyu.mca.MainActivity
 import org.xksyu.mca.R
 import org.xksyu.mca.data.base.AlarmData
-import org.xksyu.mca.feature.permission.Permission
 import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.feature.basic.setAlarm
+import org.xksyu.mca.feature.permission.Permission
 import org.xksyu.mca.feature.permission.ShizukuActivate
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
@@ -88,7 +89,7 @@ class ActivateActivity : ComponentActivity() {
                         },
                         onBackB = {
                             settingsManager.notFirst()
-                            settingsManager.waySet(2)
+                            settingsManager.waySet(SettingsManager.WAY_DEFAULT)
                             Toast.makeText(this, R.string.actPage_shizuku_finish, Toast.LENGTH_SHORT).show()
                             finish()
                             val intent = Intent(this, MainActivity::class.java)
@@ -102,7 +103,7 @@ class ActivateActivity : ComponentActivity() {
                         },
                         onBackB = {
                             settingsManager.notFirst()
-                            settingsManager.waySet(1)
+                            settingsManager.waySet(SettingsManager.WAY_SHIZUKU)
                             settingsManager.debugSet(false)
                             finish()
                             val intent = Intent(this, MainActivity::class.java)
@@ -280,7 +281,7 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                if(!per.exactAlarm.value) {
+                if(!per.exactAlarm.value && Build.VERSION.SDK_INT >= 31) {
                     Button(onClick = {
                         val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
                         intent.data = "package:${context.packageName}".toUri()
@@ -492,9 +493,23 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                     Button(onClick = {
                         show = false
                         settingsManager.debugSet(true)
-                        val alarm = AlarmData(settingsManager.updateId(),"Click",0,0,0,0,false,0,0,true,true)
+                        val alarm = AlarmData(
+                            settingsManager.updateId(),
+                            "Click",
+                            0,
+                            0,
+                            AlarmData.AUTO_ONCE,
+                            0,
+                            false,
+                            0,
+                            0,
+                            isOpen = true,
+                            isRepeat = true
+                        )
                         setAlarm(alarm,context,settingsManager)
 
+//                        val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT)
+//                        context.startActivity(intent)
                     }
                     ) { Text(stringResource(R.string.actPage_permission_lc_start)) }
                 }

@@ -18,6 +18,6 @@ data class Permission(
         exactAlarm.value = canScheduleExactAlarms(alarmManager)
 
         val noticeManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        noticePermission.value = noticeManager.areNotificationsEnabled();
+        noticePermission.value = noticeManager.areNotificationsEnabled()
     }
 }

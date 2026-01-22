@@ -1,6 +1,6 @@
 package org.xksyu.mca.feature.basic
 
-import android.R
+import android.R.drawable
 import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,16 +9,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.xksyu.mca.MCApplication
 import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.page.AlarmGet
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 class AlarmReceiver : BroadcastReceiver() {
     @SuppressLint("ServiceCast")
@@ -109,6 +109,7 @@ class AlarmReceiver : BroadcastReceiver() {
 }
 
 class AlarmForegroundService : Service() {
+    @SuppressLint("FullScreenIntentPolicy")
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val alarmId = intent.getIntExtra("ALARM_ID", -1)
 
@@ -159,7 +160,7 @@ class AlarmForegroundService : Service() {
 
         val repository = (application as MCApplication).repository
         val notificationBuilder = NotificationCompat.Builder(this, "alarm_channel_id")
-            .setSmallIcon(R.drawable.ic_lock_idle_alarm)
+            .setSmallIcon(drawable.ic_lock_idle_alarm)
             .setContentTitle(getString(org.xksyu.mca.R.string.notice_title))
             //.setContentText(repository.getById(alarmId)?.name ?: "null")
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -181,7 +182,11 @@ class AlarmForegroundService : Service() {
                 println("NOTICE  name: ${it.name}")
                 notificationBuilder.setContentText(name)
             }
-            startForeground(alarmId, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            if (Build.VERSION.SDK_INT >= 34) {
+                startForeground(alarmId, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)
+            } else {
+                startForeground(alarmId, notificationBuilder.build())
+            }
             println("----------------NOTICE END---------------")
         }
         return START_NOT_STICKY

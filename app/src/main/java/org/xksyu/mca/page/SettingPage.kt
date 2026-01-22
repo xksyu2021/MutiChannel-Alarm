@@ -156,8 +156,8 @@ fun Language(settingsManager: SettingsManager){
             verticalAlignment = Alignment.CenterVertically
         ) {
             val lang = when(settingsManager.getLang()) {
-                1 -> stringResource(R.string.settingPage_lang_zh)
-                2 -> stringResource(R.string.settingPage_lang_en)
+                SettingsManager.LANG_ZH -> stringResource(R.string.settingPage_lang_zh)
+                SettingsManager.LANG_EN -> stringResource(R.string.settingPage_lang_en)
                 else -> stringResource(R.string.settingPage_lang_auto)
             }
 
@@ -180,21 +180,21 @@ fun Language(settingsManager: SettingsManager){
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.settingPage_lang_auto)) },
                         onClick = {
-                            settingsManager.saveLang(0)
+                            settingsManager.saveLang(SettingsManager.LANG_AUTO)
                             showMenu = false
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.settingPage_lang_zh)) },
                         onClick = {
-                            settingsManager.saveLang(1)
+                            settingsManager.saveLang(SettingsManager.LANG_ZH)
                             showMenu = false
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.settingPage_lang_en)) },
                         onClick = {
-                            settingsManager.saveLang(2)
+                            settingsManager.saveLang(SettingsManager.LANG_EN)
                             showMenu = false
                         }
                     )
