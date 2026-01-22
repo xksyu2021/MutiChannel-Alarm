@@ -20,6 +20,10 @@ class SettingsManager(context: Context?) {
         const val LANG_EN = 2
         const val WAY_SHIZUKU = 1
         const val WAY_DEFAULT = 2
+        const val DEBUG_OFF = -1
+        const val DEBUG_GRANT = -2
+        const val DEBUG_NOW = 2
+        const val DEBUG_VIEW = 3
     }
 
     private val sharedPref: SharedPreferences? =
@@ -68,11 +72,11 @@ class SettingsManager(context: Context?) {
         return way
     }
 
-    fun debugSet(mode : Boolean){
-        sharedPref?.edit { putBoolean(DEBUG, mode) }
+    fun debugSet(mode : Int){
+        sharedPref?.edit { putInt(DEBUG, mode) }
     }
-    fun debugGet(): Boolean{
-        val way = sharedPref?.getBoolean(DEBUG, false) ?: false
-        return way
+    fun debugGet(): Int{
+        val debug = sharedPref?.getInt(DEBUG, DEBUG_OFF) ?: DEBUG_OFF
+        return debug
     }
 }

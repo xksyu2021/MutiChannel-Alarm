@@ -96,7 +96,7 @@
     <string name="actPage_permission_lc_text">重要：\n在其他权限全部授权成功后再进行。\n按下“开始”后，立刻关闭手机屏幕，再点亮屏幕。点击锁屏上的通知，再解锁手机，等待权限申请窗口出现。</string>
     <string name="actPage_permission_lc_back">返回</string>
     <string name="actPage_permission_lc_start">开始</string>
-    <string name="debug_grant">如果此页面在锁屏后直接点亮了屏幕，或者你在刚刚弹出的系统对话框内进行了授权，点此按钮继续。</string>
+    <string name="debug_grant">如果此页面在锁屏后直接，或者你在刚刚弹出的系统对话框内点击了授权，点此按钮继续。</string>
     <string name="debug_grantFailed">其他情况下，授权失败，请重试。</string>
     <string name="debug_grantSuccess">完成</string>
 </resources>

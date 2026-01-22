@@ -104,6 +104,7 @@ fun SettingPage(onBack: () -> Unit = {},context: Context? = null,settingsManager
 
 @Composable
 fun Debug(settingsManager: SettingsManager){
+    var showMenu by remember { mutableStateOf(false) }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -122,13 +123,52 @@ fun Debug(settingsManager: SettingsManager){
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Checkbox(
-                checked = debug,
-                onCheckedChange = {
-                    debug = it
-                    settingsManager.debugSet(debug)
+            val debug = when(settingsManager.getLang()) {
+                SettingsManager.DEBUG_GRANT -> "DEBUG_GRANT"
+                SettingsManager.DEBUG_NOW -> "DEBUG_NOW"
+                SettingsManager.DEBUG_VIEW -> "DEBUG_VIEW"
+                else -> "DEBUG_OFF"
+            }
+
+            Text(debug)
+            Box {
+                IconButton(onClick = { showMenu = !showMenu }) {
+                    Icon(
+                        Icons.Default.ArrowDropDown,
+                        contentDescription = null
+                    )
                 }
-            )
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false },
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.inverseOnSurface
+                        )
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("DEBUG_OFF") },
+                        onClick = {
+                            settingsManager.saveLang(SettingsManager.DEBUG_OFF)
+                            showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("DEBUG_NOW") },
+                        onClick = {
+                            settingsManager.saveLang(SettingsManager.DEBUG_NOW)
+                            showMenu = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("DEBUG_VIEW") },
+                        onClick = {
+                            settingsManager.saveLang(SettingsManager.DEBUG_VIEW)
+                            showMenu = false
+                        }
+                    )
+                }
+            }
         }
     }
 }

@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.xksyu.mca.MCApplication
+import org.xksyu.mca.MainActivity
 import org.xksyu.mca.R
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.base.AlarmViewModelFactory
@@ -110,14 +111,14 @@ class AlarmGet : ComponentActivity() {
         handler.postDelayed(idleRunnable!!, 60 * 1000L)
 
         val vibrator =  getSystemService(Vibrator::class.java)
-        if(settingsManager.getChanVib() && !settingsManager.debugGet()
+        if(settingsManager.getChanVib() && settingsManager.debugGet() != SettingsManager.DEBUG_GRANT
             ){
            vibrator.vibrate(VibrationEffect.createOneShot(60*1000, VibrationEffect.DEFAULT_AMPLITUDE))
         }
 
         setContent {
             ContrastAwareReplyTheme{
-                if(settingsManager.debugGet()){
+                if(settingsManager.debugGet() != SettingsManager.DEBUG_OFF){
                     PopupDebug(
                         alarmViewModel = alarmViewModel,
                         onFinish = { grantValue ->
@@ -134,9 +135,15 @@ class AlarmGet : ComponentActivity() {
                             wakeLock.release()
                             vibrator.cancel()
 
-                            val intent = Intent(this, ActivateActivity::class.java)
-                            intent.putExtra("GRANT", grantValue)
-                            this.startActivity(intent)
+                            if(settingsManager.debugGet() == SettingsManager.DEBUG_GRANT) {
+                                val intent = Intent(this, ActivateActivity::class.java)
+                                intent.putExtra("GRANT", grantValue)
+                                this.startActivity(intent)
+                            } else {
+                                val intent = Intent(this, MainActivity::class.java)
+                                intent.putExtra("GRANT", grantValue)
+                                this.startActivity(intent)
+                            }
                             finish()
                         },
                         settingsManager = settingsManager,

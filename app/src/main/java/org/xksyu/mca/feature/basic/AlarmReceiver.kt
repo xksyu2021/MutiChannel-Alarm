@@ -41,7 +41,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 }
             }
             "STOP_ALARM_ACTION" -> {
-                if(!settingsManager.debugGet()) {
+                if(settingsManager.debugGet() != SettingsManager.DEBUG_GRANT ) {
                     val alarmId = intent.getIntExtra("ALARM_ID", -1)
                     val notificationManager =
                         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -61,7 +61,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 }
             }
             "SNOOZE_ALARM_ACTION" -> {
-                if(!settingsManager.debugGet()) {
+                if(settingsManager.debugGet() != SettingsManager.DEBUG_GRANT) {
                     val notificationManager =
                         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                     val alarmId = intent.getIntExtra("ALARM_ID", -1)

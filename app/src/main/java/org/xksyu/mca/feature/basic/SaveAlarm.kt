@@ -102,11 +102,10 @@ fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager
     println("  id: ${alarm.id}")
     println("  timeHour: ${alarm.timeHour}, timeMinute: ${alarm.timeMinute}")
     println("  name: ${alarm.name}")
-    println("DEBUG Set values:")
-    println("  DayOfWeek: ${time.get(Calendar.DAY_OF_WEEK)}")
-    println("  Hour: ${time.get(Calendar.HOUR_OF_DAY)}, Minute: ${time.get(Calendar.MINUTE)}")
 
-    if(settingsManager.debugGet()){
+    println(">>>> DEBUG MODE ** ${settingsManager.debugGet()} <<<<")
+
+    if(settingsManager.debugGet() == SettingsManager.DEBUG_GRANT || settingsManager.debugGet() == SettingsManager.DEBUG_NOW ){
         time = Calendar.getInstance()
         time.add(Calendar.SECOND, 5)
     }
@@ -121,6 +120,10 @@ fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager
         alarmIntent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
+
+    println("DEBUG Set values:")
+    println("  DayOfWeek: ${time.get(Calendar.DAY_OF_WEEK)}")
+    println("  Hour: ${time.get(Calendar.HOUR_OF_DAY)}, Minute: ${time.get(Calendar.MINUTE)}, Second: ${time.get(Calendar.SECOND)}")
 
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,time.timeInMillis,alarmPendingIntent)

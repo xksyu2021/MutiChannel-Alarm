@@ -75,11 +75,11 @@ class ActivateActivity : ComponentActivity() {
                 when(page.step.value) {
                     0 -> ActivatePageA(
                         onBackA = {
-                            settingsManager.debugSet(false)
+                            settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
                             finish()
                         },
                         onBackB = {
-                            settingsManager.debugSet(false)
+                            settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
                             page.step.value = 1
                         },
                         context = this, activity = this, settingsManager = settingsManager, intent = intent, per = per)
@@ -99,12 +99,12 @@ class ActivateActivity : ComponentActivity() {
                     2 -> {ActivatePageShizuku(
                         onBackA = {
                             page.step.value = 1
-                            settingsManager.debugSet(false)
+                            settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
                         },
                         onBackB = {
                             settingsManager.notFirst()
                             settingsManager.waySet(SettingsManager.WAY_SHIZUKU)
-                            settingsManager.debugSet(false)
+                            settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
                             finish()
                             val intent = Intent(this, MainActivity::class.java)
                             this.startActivity(intent)
@@ -202,13 +202,13 @@ fun ActivatePageShizuku(context: Context, onBackA: () -> Unit = {}, onBackB: () 
 
 @Composable
 fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: Context, activity: Activity,settingsManager : SettingsManager,intent : Intent,per: Permission) {
-//    val grantValue = remember {
-//        val value = intent.getBooleanExtra("GRANT", false)
-//        if (value) {
-//            per.lockScreen.value = true
-//        }
-//        value
-//    }
+    val grantValue = remember {
+        val value = intent.getBooleanExtra("GRANT", false)
+        if (value) {
+            per.lockScreen.value = true
+        }
+        value
+    }
     val lockScreenState = remember { per.lockScreen }
     val lockScreen by lockScreenState
 
@@ -492,7 +492,7 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                 confirmButton = {
                     Button(onClick = {
                         show = false
-                        settingsManager.debugSet(true)
+                        settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
                         val alarm = AlarmData(
                             settingsManager.updateId(),
                             "Click",
