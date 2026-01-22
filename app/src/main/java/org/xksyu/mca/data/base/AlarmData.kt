@@ -12,7 +12,6 @@ data class AlarmData(
     var timeHour :Int = 0,
     var timeMinute :Int = 0,
 
-    //0=once 1=manual 2=auto 3=everyday
     var autoWeek : Int = 0,
     var weekSelect: Int = 0b00000_00,
 
@@ -22,4 +21,11 @@ data class AlarmData(
 
     var isOpen : Boolean = true,
     var isRepeat : Boolean = false
-)
+) {
+    companion object {
+        const val AUTO_EVERYDAY = 3
+        const val AUTO_WEEK_OR_WEEKEND = 2
+        const val AUTO_DIY = 1
+        const val AUTO_ONCE = 0
+    }
+}

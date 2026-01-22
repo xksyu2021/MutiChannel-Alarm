@@ -2,7 +2,6 @@ package org.xksyu.mca.feature.basic
 
 import android.R
 import android.annotation.SuppressLint
-import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
@@ -14,14 +13,12 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import org.xksyu.mca.MCApplication
-import org.xksyu.mca.data.temp.SettingsManager
-import org.xksyu.mca.data.base.AlarmData
+import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.page.AlarmGet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 class AlarmReceiver : BroadcastReceiver() {
     @SuppressLint("ServiceCast")
@@ -190,12 +187,4 @@ class AlarmForegroundService : Service() {
         return START_NOT_STICKY
     }
     override fun onBind(intent: Intent?): IBinder? = null
-}
-
-suspend fun reloadList(context: Context,settingsManager: SettingsManager){
-    val repository = (context.applicationContext as MCApplication).repository
-    val list = repository.alarms.first()
-    list.forEach { alarm ->
-        setAlarm(alarm, context, settingsManager)
-    }
 }

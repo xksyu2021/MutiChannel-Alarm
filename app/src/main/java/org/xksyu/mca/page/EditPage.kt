@@ -62,12 +62,12 @@ import java.util.Calendar
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import org.xksyu.mca.data.temp.AlarmTemp
+import org.xksyu.mca.feature.basic.AlarmTemp
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.base.AlarmViewModelFactory
 import org.xksyu.mca.MCApplication
 import org.xksyu.mca.R
-import org.xksyu.mca.data.temp.SettingsManager
+import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.feature.basic.cancelAlarm
 import org.xksyu.mca.data.base.AlarmData
 import org.xksyu.mca.feature.basic.onSave
@@ -401,28 +401,28 @@ fun AddConfigList(temp : AlarmTemp, isEdit : Boolean, alarmById: AlarmData?){
                         text = { Text(stringResource(R.string.addPage_diy_once)) },
                         onClick = {
                             showMenu = false
-                            temp.autoEnabled.value = 0
+                            temp.autoEnabled.value = AlarmTemp.AUTO_ONCE
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.addPage_diy_customize)) },
                         onClick = {
                             showMenu = false
-                            temp.autoEnabled.value = 1
+                            temp.autoEnabled.value = AlarmTemp.AUTO_DIY
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.addPage_diy_auto)) },
                         onClick = {
                             showMenu = false
-                            temp.autoEnabled.value = 2
+                            temp.autoEnabled.value = AlarmTemp.AUTO_WEEK_OR_WEEKEND
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.addPage_diy_every)) },
                         onClick = {
                             showMenu = false
-                            temp.autoEnabled.value = 3
+                            temp.autoEnabled.value = AlarmTemp.AUTO_EVERYDAY
                         }
                     )
                 }
@@ -430,13 +430,13 @@ fun AddConfigList(temp : AlarmTemp, isEdit : Boolean, alarmById: AlarmData?){
         }
     }
     when(temp.autoEnabled.value){
-        3 -> Text(stringResource(R.string.addPage_diy_every))
-        2 -> Row {
+        AlarmTemp.AUTO_EVERYDAY -> Text(stringResource(R.string.addPage_diy_every))
+        AlarmTemp.AUTO_WEEK_OR_WEEKEND -> Row {
             AutoDaysChip(0,temp.autoDays,autoWeekName)
             Spacer(modifier = Modifier.padding(horizontal = 10.dp))
             AutoDaysChip(1,temp.autoDays,autoWeekName)
         }
-        1 -> {
+        AlarmTemp.AUTO_DIY -> {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth(0.9f),
@@ -453,7 +453,7 @@ fun AddConfigList(temp : AlarmTemp, isEdit : Boolean, alarmById: AlarmData?){
                 }
             }
         }
-        else -> Text(stringResource(R.string.addPage_diy_once))
+        AlarmTemp.AUTO_ONCE -> Text(stringResource(R.string.addPage_diy_once))
     }
 
     HorizontalDivider(

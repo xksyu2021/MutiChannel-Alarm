@@ -38,7 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.xksyu.mca.R
-import org.xksyu.mca.data.temp.SettingsManager
+import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
 

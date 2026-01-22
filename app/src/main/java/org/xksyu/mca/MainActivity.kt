@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.base.AlarmViewModelFactory
-import org.xksyu.mca.data.temp.SettingsManager
+import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.page.ActivateActivity
 import org.xksyu.mca.page.MainPage
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme

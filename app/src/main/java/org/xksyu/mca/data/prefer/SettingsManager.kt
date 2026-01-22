@@ -1,4 +1,4 @@
-package org.xksyu.mca.data.temp
+package org.xksyu.mca.data.prefer
 
 import android.content.Context
 import android.content.SharedPreferences

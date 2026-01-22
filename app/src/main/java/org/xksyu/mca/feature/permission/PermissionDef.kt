@@ -1,4 +1,4 @@
-package org.xksyu.mca.data.temp
+package org.xksyu.mca.feature.permission
 
 import android.app.AlarmManager
 import android.app.NotificationManager

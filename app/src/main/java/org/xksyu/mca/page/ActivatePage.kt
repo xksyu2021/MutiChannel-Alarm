@@ -52,10 +52,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.xksyu.mca.MainActivity
 import org.xksyu.mca.R
 import org.xksyu.mca.data.base.AlarmData
-import org.xksyu.mca.data.temp.Permission
-import org.xksyu.mca.data.temp.SettingsManager
+import org.xksyu.mca.feature.permission.Permission
+import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.feature.basic.setAlarm
-import org.xksyu.mca.feature.permission.CheckPermission
+import org.xksyu.mca.feature.permission.ShizukuActivate
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
 data class Page(var step: MutableState<Int> = mutableIntStateOf(0))
@@ -186,13 +186,28 @@ fun ActivatePageShizuku(context: Context, onBackA: () -> Unit = {}, onBackB: () 
     BackHandler(enabled = true) {
         onBackA()
     }
-    CheckPermission(context,onBackA,onBackB)
+    val shizukuGrant = ShizukuActivate()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentWidth(Alignment.CenterHorizontally)
+            .padding(top = 30.dp)
+    ) {
+        shizukuGrant.CheckPermissionUI(context,onBackA,onBackB)
+    }
 }
 
 @Composable
 fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: Context, activity: Activity,settingsManager : SettingsManager,intent : Intent,per: Permission) {
-
-    // 使用 remember 包装外部状态
+//    val grantValue = remember {
+//        val value = intent.getBooleanExtra("GRANT", false)
+//        if (value) {
+//            per.lockScreen.value = true
+//        }
+//        value
+//    }
     val lockScreenState = remember { per.lockScreen }
     val lockScreen by lockScreenState
 
@@ -480,9 +495,6 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                         val alarm = AlarmData(settingsManager.updateId(),"Click",0,0,0,0,false,0,0,true,true)
                         setAlarm(alarm,context,settingsManager)
 
-                        if (intent.getBooleanExtra("GRANT",false)){
-                            per.lockScreen.value = true
-                        }
                     }
                     ) { Text(stringResource(R.string.actPage_permission_lc_start)) }
                 }

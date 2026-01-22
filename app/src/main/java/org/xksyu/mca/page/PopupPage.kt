@@ -5,7 +5,14 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.PowerManager
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
@@ -27,27 +34,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
-import android.os.Handler
-import android.os.Looper
-import android.os.PowerManager
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.provider.Settings
-import android.view.WindowManager
-import androidx.activity.compose.BackHandler
 import androidx.compose.ui.res.stringResource
-import org.xksyu.mca.feature.basic.AlarmForegroundService
-import org.xksyu.mca.data.temp.AlarmTemp
+import androidx.compose.ui.unit.dp
 import org.xksyu.mca.MCApplication
 import org.xksyu.mca.R
-import org.xksyu.mca.data.temp.SettingsManager
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.base.AlarmViewModelFactory
+import org.xksyu.mca.feature.basic.AlarmTemp
+import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.debug.PopupDebug
+import org.xksyu.mca.feature.basic.AlarmForegroundService
 import org.xksyu.mca.feature.basic.setAlarm
-import java.lang.Runnable
+import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
 
 class AlarmGet : ComponentActivity() {

@@ -6,10 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.material3.ExperimentalMaterial3Api
+import kotlinx.coroutines.flow.first
+import org.xksyu.mca.MCApplication
 import org.xksyu.mca.data.base.AlarmData
 import org.xksyu.mca.data.base.AlarmViewModel
-import org.xksyu.mca.data.temp.AlarmTemp
-import org.xksyu.mca.data.temp.SettingsManager
+import org.xksyu.mca.data.prefer.SettingsManager
 import java.util.Calendar
 
 fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager) {
@@ -18,7 +19,7 @@ fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager
     var dayOfWeek = 0b1 shl (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2)
     if (dayOfWeek == 0) dayOfWeek = 0b1 shl 6
     var time = when(alarm.autoWeek) {
-        3 -> {
+        AlarmData.AUTO_EVERYDAY -> {
             Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, alarm.timeHour)
                 set(Calendar.MINUTE, alarm.timeMinute)
@@ -30,7 +31,7 @@ fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager
             }
         }
 
-        2 -> {
+        AlarmData.AUTO_WEEK_OR_WEEKEND -> {
             println("  dayOfWeek: ${dayOfWeek.toString(2)}")
             Calendar.getInstance().apply {
                 set(Calendar.HOUR_OF_DAY, alarm.timeHour)
@@ -54,7 +55,7 @@ fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager
             }
         }
 
-        1 -> {
+        AlarmData.AUTO_DIY -> {
             val setTemp = alarm.weekSelect
             val set = (setTemp shl 7) + alarm.weekSelect
             println("  dayOfWeek: ${dayOfWeek.toString(2)}, setTemp: ${setTemp.toString(2)}, set: ${set.toString(2)}")
@@ -84,11 +85,6 @@ fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager
                 if(alarm.isRepeat){
                     add(Calendar.MINUTE,alarm.remindMinute)
 
-                    //
-                    //add(Calendar.SECOND,10)
-                    //add(Calendar.MINUTE, - alarm.remindMinute)
-                    //For debug
-
                     alarm.timeMinute += alarm.remindMinute
                     if (alarm.timeMinute>=60){
                         alarm.timeMinute -= 60
@@ -96,7 +92,7 @@ fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager
                         if (alarm.timeHour>=24) alarm.timeHour-=24
                     }
                 }else if (timeInMillis <= System.currentTimeMillis()){
-                    add(Calendar.DATE,7)
+                    add(Calendar.DATE,1)
                 }
             }
         }
@@ -153,12 +149,12 @@ fun cancelAlarm(alarm: AlarmData, context: Context){
 fun onSave(temp : AlarmTemp, alarmViewModel: AlarmViewModel, context: Context, settingsManager: SettingsManager) : Boolean {
     var weekSelectTemp = 0b0
     when (temp.autoEnabled.value) {
-        2 -> for (code in 0..1) {
+        AlarmTemp.AUTO_WEEK_OR_WEEKEND -> for (code in 0..1) {
             if(temp.autoDays[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
             }
         }
-        1 -> for (code in 0..6) {
+        AlarmTemp.AUTO_DIY -> for (code in 0..6) {
             if(temp.days[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
             }
@@ -195,12 +191,12 @@ fun onSave(temp : AlarmTemp, alarmViewModel: AlarmViewModel, context: Context, s
 fun onSaveEdit(temp : AlarmTemp, alarmViewModel: AlarmViewModel, context: Context,settingsManager : SettingsManager) : Boolean {
     var weekSelectTemp = 0b0
     when(temp.autoEnabled.value) {
-        2 -> for (code in 0..1) {
+        AlarmTemp.AUTO_WEEK_OR_WEEKEND -> for (code in 0..1) {
             if(temp.autoDays[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
             }
         }
-        1 -> for (code in 0..6) {
+        AlarmTemp.AUTO_DIY -> for (code in 0..6) {
             if(temp.days[code]){
                 weekSelectTemp = weekSelectTemp or (0b1 shl code)
             }
@@ -232,4 +228,12 @@ fun onSaveEdit(temp : AlarmTemp, alarmViewModel: AlarmViewModel, context: Contex
     println("----------------SAVE----------------")
     //Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
     return true
+}
+
+suspend fun reloadList(context: Context,settingsManager: SettingsManager){
+    val repository = (context.applicationContext as MCApplication).repository
+    val list = repository.alarms.first()
+    list.forEach { alarm ->
+        setAlarm(alarm, context, settingsManager)
+    }
 }

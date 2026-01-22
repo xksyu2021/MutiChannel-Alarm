@@ -1,4 +1,4 @@
-package org.xksyu.mca.data.temp
+package org.xksyu.mca.feature.basic
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
@@ -19,4 +19,11 @@ data class AlarmTemp(
     val minute: MutableState<Int> = mutableIntStateOf(0),
     val hourGet: MutableState<Int> = mutableIntStateOf(0),
     val minuteGet: MutableState<Int> = mutableIntStateOf(0)
-)
+){
+    companion object{
+        const val AUTO_EVERYDAY = 3
+        const val AUTO_WEEK_OR_WEEKEND = 2
+        const val AUTO_DIY = 1
+        const val AUTO_ONCE = 0
+    }
+}
