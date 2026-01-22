@@ -1,15 +1,9 @@
 package org.xksyu.mca.page
 
 import android.annotation.SuppressLint
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.PowerManager
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -41,19 +35,16 @@ import org.xksyu.mca.MainActivity
 import org.xksyu.mca.R
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.base.AlarmViewModelFactory
-import org.xksyu.mca.feature.basic.AlarmTemp
 import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.debug.PopupDebug
-import org.xksyu.mca.feature.basic.AlarmForegroundService
+import org.xksyu.mca.feature.basic.AlarmTemp
+import org.xksyu.mca.feature.basic.Reminder
+import org.xksyu.mca.feature.basic.repeatFun
 import org.xksyu.mca.feature.basic.setAlarm
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
-
 class AlarmGet : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
-    private val handler = Handler(Looper.getMainLooper())
-    private var idleRunnable: Runnable? = null
-
     @SuppressLint("ServiceCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +60,7 @@ class AlarmGet : ComponentActivity() {
 
         val id = intent.getIntExtra("ALARM_ID",-1)
         settingsManager = SettingsManager(this)
+
         println("----------------AlarmGet---------------")
         println("DEBUG ALARM_ID in AlarmGetPage = $id")
         val alarmViewModel: AlarmViewModel by viewModels {
@@ -76,44 +68,12 @@ class AlarmGet : ComponentActivity() {
             AlarmViewModelFactory(id, repository)
         }
 
-        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        val wakeLock = powerManager.newWakeLock(
-            PowerManager.PARTIAL_WAKE_LOCK,
-            "MCA:WakeLockTag"
-        )
-        wakeLock.setReferenceCounted(false)
-        wakeLock.acquire(60 * 1000L)
-
-        idleRunnable = Runnable {
-            val alarmRepeat = alarmViewModel.alarmById.value?.copy(
-                id = settingsManager.updateId(),
-                isRepeat = true, autoWeek = 0
-            )
-            alarmRepeat?.let {
-                if (it.remindTime > 0) {
-                    setAlarm(it, this,settingsManager)
-                }
-                it.remindTime -= 1
-            }
-            alarmViewModel.update(alarmRepeat)
-            idleRunnable?.let { handler.removeCallbacks(it) }
-            alarmViewModel.alarmById.value?.let {
-                if(it.isRepeat) alarmViewModel.delete(it)
-            }
-            val notificationManager = this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-            val serviceIntent = Intent(this, AlarmForegroundService::class.java)
-            this.stopService(serviceIntent)
-            notificationManager.cancel(id)
-
-            wakeLock.release()
+        val reminder = Reminder(this,settingsManager,id)
+        reminder.start()
+        reminder.idleAction{
+            repeatFun(this,alarmViewModel,settingsManager)
+            reminder.stop()
             finish()
-        }
-        handler.postDelayed(idleRunnable!!, 60 * 1000L)
-
-        val vibrator =  getSystemService(Vibrator::class.java)
-        if(settingsManager.getChanVib() && settingsManager.debugGet() != SettingsManager.DEBUG_GRANT
-            ){
-           vibrator.vibrate(VibrationEffect.createOneShot(60*1000, VibrationEffect.DEFAULT_AMPLITUDE))
         }
 
         setContent {
@@ -122,18 +82,9 @@ class AlarmGet : ComponentActivity() {
                     PopupDebug(
                         alarmViewModel = alarmViewModel,
                         onFinish = { grantValue ->
-                            idleRunnable?.let { handler.removeCallbacks(it) }
                             alarmViewModel.alarmById.value?.let {
                                 if (it.isRepeat) alarmViewModel.delete(it)
                             }
-                            val notificationManager =
-                                this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                            val serviceIntent = Intent(this, AlarmForegroundService::class.java)
-                            this.stopService(serviceIntent)
-                            notificationManager.cancel(id)
-
-                            wakeLock.release()
-                            vibrator.cancel()
 
                             if(settingsManager.debugGet() == SettingsManager.DEBUG_GRANT) {
                                 val intent = Intent(this, ActivateActivity::class.java)
@@ -144,6 +95,8 @@ class AlarmGet : ComponentActivity() {
                                 intent.putExtra("GRANT", grantValue)
                                 this.startActivity(intent)
                             }
+
+                            reminder.stop()
                             finish()
                         },
                         settingsManager = settingsManager,
@@ -154,18 +107,11 @@ class AlarmGet : ComponentActivity() {
                     AlarmGetPage(
                         alarmViewModel = alarmViewModel,
                         onFinish = {
-                            idleRunnable?.let { handler.removeCallbacks(it) }
                             alarmViewModel.alarmById.value?.let {
                                 if (it.isRepeat) alarmViewModel.delete(it)
                             }
-                            val notificationManager =
-                                this.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                            val serviceIntent = Intent(this, AlarmForegroundService::class.java)
-                            this.stopService(serviceIntent)
-                            notificationManager.cancel(id)
 
-                            wakeLock.release()
-                            vibrator.cancel()
+                            reminder.stop()
                             finish()
                         },
                         settingsManager = settingsManager,

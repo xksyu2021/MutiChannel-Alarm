@@ -240,3 +240,20 @@ suspend fun reloadList(context: Context,settingsManager: SettingsManager){
         setAlarm(alarm, context, settingsManager)
     }
 }
+
+fun repeatFun(context: Context,alarmViewModel: AlarmViewModel,settingsManager : SettingsManager){
+    val alarmRepeat = alarmViewModel.alarmById.value?.copy(
+        id = settingsManager.updateId(),
+        isRepeat = true, autoWeek = 0
+    )
+    alarmRepeat?.let {
+        if (it.remindTime > 0) {
+            setAlarm(it, context,settingsManager)
+        }
+        it.remindTime -= 1
+    }
+    alarmViewModel.update(alarmRepeat)
+    alarmViewModel.alarmById.value?.let {
+        if(it.isRepeat) alarmViewModel.delete(it)
+    }
+}

@@ -191,5 +191,19 @@ class AlarmForegroundService : Service() {
         }
         return START_NOT_STICKY
     }
+
     override fun onBind(intent: Intent?): IBinder? = null
+
+    companion object {
+        fun stopNotification(context: Context,id: Int){
+            val notificationManager =
+                context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(id)
+        }
+        fun stopService(context: Context) {
+            val serviceIntent = Intent(context, AlarmForegroundService::class.java)
+            context.stopService(serviceIntent)
+            println("TEST AWA $context")
+        }
+    }
 }

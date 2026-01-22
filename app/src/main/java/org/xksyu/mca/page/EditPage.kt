@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -57,21 +60,18 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
-import java.util.Calendar
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import org.xksyu.mca.feature.basic.AlarmTemp
-import org.xksyu.mca.data.base.AlarmViewModel
-import org.xksyu.mca.data.base.AlarmViewModelFactory
 import org.xksyu.mca.MCApplication
 import org.xksyu.mca.R
-import org.xksyu.mca.data.prefer.SettingsManager
-import org.xksyu.mca.feature.basic.cancelAlarm
 import org.xksyu.mca.data.base.AlarmData
+import org.xksyu.mca.data.base.AlarmViewModel
+import org.xksyu.mca.data.base.AlarmViewModelFactory
+import org.xksyu.mca.data.prefer.SettingsManager
+import org.xksyu.mca.feature.basic.AlarmTemp
+import org.xksyu.mca.feature.basic.cancelAlarm
 import org.xksyu.mca.feature.basic.onSave
 import org.xksyu.mca.feature.basic.onSaveEdit
+import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
+import java.util.Calendar
 
 class AddActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
@@ -467,7 +467,9 @@ fun AddConfigList(temp : AlarmTemp, isEdit : Boolean, alarmById: AlarmData?){
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         ),
-        onClick = { },
+        onClick = {
+
+        },
         modifier = Modifier
             .fillMaxWidth(0.85f)
             .padding(horizontal = 5.dp)
