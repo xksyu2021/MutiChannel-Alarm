@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import org.xksyu.mca.MCApplication
 import org.xksyu.mca.MainActivity
 import org.xksyu.mca.R
+import org.xksyu.mca.data.base.AlarmData
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.base.AlarmViewModelFactory
 import org.xksyu.mca.data.prefer.SettingsManager
@@ -71,7 +72,7 @@ class AlarmGet : ComponentActivity() {
         val reminder = Reminder(this,settingsManager,id)
         reminder.start()
         reminder.idleAction{
-            repeatFun(this,alarmViewModel,settingsManager)
+            repeatFun(AlarmData.REPEAT_AUTO,this,alarmViewModel,settingsManager)
             reminder.stop()
             finish()
         }
@@ -82,10 +83,6 @@ class AlarmGet : ComponentActivity() {
                     PopupDebug(
                         alarmViewModel = alarmViewModel,
                         onFinish = { grantValue ->
-                            alarmViewModel.alarmById.value?.let {
-                                if (it.isRepeat) alarmViewModel.delete(it)
-                            }
-
                             if(settingsManager.debugGet() == SettingsManager.DEBUG_GRANT) {
                                 val intent = Intent(this, ActivateActivity::class.java)
                                 intent.putExtra("GRANT", grantValue)
@@ -107,10 +104,6 @@ class AlarmGet : ComponentActivity() {
                     AlarmGetPage(
                         alarmViewModel = alarmViewModel,
                         onFinish = {
-                            alarmViewModel.alarmById.value?.let {
-                                if (it.isRepeat) alarmViewModel.delete(it)
-                            }
-
                             reminder.stop()
                             finish()
                         },
@@ -184,14 +177,7 @@ fun AlarmGetPage(alarmViewModel: AlarmViewModel, onFinish: () -> Unit = {}, sett
 
             Spacer(Modifier.padding(vertical = 100.dp))
             Button(onClick = {
-                alarmById?.let{
-                    val repeatAlarm = it.copy(
-                        id = settingsManager.updateId(),
-                        isRepeat = true, autoWeek = 0
-                    )
-                    setAlarm(repeatAlarm, context,settingsManager)
-                    alarmViewModel.insert(repeatAlarm)
-                }
+                repeatFun(AlarmData.REPEAT_MANUAL,context,alarmViewModel,settingsManager)
                 onFinish()
             }) {
                 Text(text= stringResource(R.string.getPage_again),

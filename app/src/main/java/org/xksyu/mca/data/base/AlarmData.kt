@@ -27,5 +27,8 @@ data class AlarmData(
         const val AUTO_WEEK_OR_WEEKEND = 2
         const val AUTO_DIY = 1
         const val AUTO_ONCE = 0
+
+        const val REPEAT_AUTO = 0
+        const val REPEAT_MANUAL = -1
     }
 }

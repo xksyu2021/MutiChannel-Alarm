@@ -241,18 +241,21 @@ suspend fun reloadList(context: Context,settingsManager: SettingsManager){
     }
 }
 
-fun repeatFun(context: Context,alarmViewModel: AlarmViewModel,settingsManager : SettingsManager){
+fun repeatFun(repeatMode: Int,context: Context,alarmViewModel: AlarmViewModel,settingsManager : SettingsManager){
     val alarmRepeat = alarmViewModel.alarmById.value?.copy(
         id = settingsManager.updateId(),
         isRepeat = true, autoWeek = 0
     )
     alarmRepeat?.let {
-        if (it.remindTime > 0) {
+        if (repeatMode == AlarmData.REPEAT_AUTO && it.remindTime > 0) {
             setAlarm(it, context,settingsManager)
+            alarmViewModel.insert(it)
+            it.remindTime -= 1
+        }else if(repeatMode == AlarmData.REPEAT_MANUAL && it.remindTime > -1){
+            setAlarm(it, context,settingsManager)
+            alarmViewModel.insert(it)
         }
-        it.remindTime -= 1
     }
-    alarmViewModel.update(alarmRepeat)
     alarmViewModel.alarmById.value?.let {
         if(it.isRepeat) alarmViewModel.delete(it)
     }

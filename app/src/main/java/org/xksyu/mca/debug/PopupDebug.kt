@@ -29,8 +29,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.xksyu.mca.R
+import org.xksyu.mca.data.base.AlarmData
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.prefer.SettingsManager
+import org.xksyu.mca.feature.basic.repeatFun
 import org.xksyu.mca.feature.basic.setAlarm
 
 @Composable
@@ -114,14 +116,7 @@ fun PopupDebug(alarmViewModel: AlarmViewModel, onFinish: (grantValue: Boolean) -
                 }
                 Row(Modifier.padding(10.dp)) {
                     OutlinedButton(onClick = {
-                        alarmById?.let {
-                            val repeatAlarm = it.copy(
-                                id = settingsManager.updateId(),
-                                isRepeat = true, autoWeek = 0
-                            )
-                            setAlarm(repeatAlarm, context, settingsManager)
-                            alarmViewModel.insert(repeatAlarm)
-                        }
+                        repeatFun(AlarmData.REPEAT_MANUAL,context,alarmViewModel,settingsManager)
                         onFinish(false)
                     }
                     ) { Text(text = "AGAIN") }
