@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">MutiChannel-Alarm</string>
+    <string name="app_name" translatable="false">多通道闹钟</string>
     <string name="menuHead">Menu</string>
     <string name="menuList_setting">Settings</string>
     <string name="menuList_about">About</string>

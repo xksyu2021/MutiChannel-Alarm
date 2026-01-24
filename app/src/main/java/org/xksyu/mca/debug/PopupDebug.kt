@@ -33,7 +33,6 @@ import org.xksyu.mca.data.base.AlarmData
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.feature.basic.repeatFun
-import org.xksyu.mca.feature.basic.setAlarm
 
 @Composable
 fun PopupDebug(alarmViewModel: AlarmViewModel, onFinish: (grantValue: Boolean) -> Unit = {}, settingsManager: SettingsManager, context: Context,intent: Intent){

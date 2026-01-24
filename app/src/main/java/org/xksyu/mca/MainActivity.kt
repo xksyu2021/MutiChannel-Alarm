@@ -14,7 +14,6 @@ import org.xksyu.mca.page.ActivateActivity
 import org.xksyu.mca.page.MainPage
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
-//android main
 class MainActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
     private val alarmViewModel: AlarmViewModel by viewModels {
