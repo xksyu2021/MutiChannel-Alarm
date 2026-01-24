@@ -50,7 +50,7 @@ class SettingsManager(context: Context?) {
         sharedPref?.edit {putInt(LANG, lang)}
     }
     fun getLang(): Int {
-        return sharedPref?.getInt(LANG, 0) ?: 1
+        return sharedPref?.getInt(LANG, 0) ?: 0
     }
 
     fun updateId() : Int{

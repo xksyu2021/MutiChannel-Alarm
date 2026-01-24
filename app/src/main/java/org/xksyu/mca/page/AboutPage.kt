@@ -35,10 +35,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import org.xksyu.mca.R
+import org.xksyu.mca.data.prefer.LocaleHelper
+import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
 
 class AboutActivity : ComponentActivity() {
+    override fun attachBaseContext(context: Context) {
+        val tempManager = SettingsManager(context)
+        super.attachBaseContext(LocaleHelper.wrap(context, tempManager.getLang()))
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val version = packageManager.getPackageInfo(packageName, 0).versionName

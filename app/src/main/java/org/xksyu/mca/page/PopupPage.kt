@@ -36,6 +36,7 @@ import org.xksyu.mca.R
 import org.xksyu.mca.data.base.AlarmData
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.base.AlarmViewModelFactory
+import org.xksyu.mca.data.prefer.LocaleHelper
 import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.debug.PopupDebug
 import org.xksyu.mca.feature.basic.AlarmTemp
@@ -46,6 +47,10 @@ import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
 class AlarmGet : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
+    override fun attachBaseContext(context: Context) {
+        val tempManager = SettingsManager(context)
+        super.attachBaseContext(LocaleHelper.wrap(context, tempManager.getLang()))
+    }
     @SuppressLint("ServiceCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

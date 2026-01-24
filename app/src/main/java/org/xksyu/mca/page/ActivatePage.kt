@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -53,6 +54,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.xksyu.mca.MainActivity
 import org.xksyu.mca.R
 import org.xksyu.mca.data.base.AlarmData
+import org.xksyu.mca.data.prefer.LocaleHelper
 import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.feature.basic.setAlarm
 import org.xksyu.mca.feature.permission.Permission
@@ -62,6 +64,10 @@ import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 data class Page(var step: MutableState<Int> = mutableIntStateOf(0))
 class ActivateActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
+    override fun attachBaseContext(context: Context) {
+        val tempManager = SettingsManager(context)
+        super.attachBaseContext(LocaleHelper.wrap(context, tempManager.getLang()))
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settingsManager = SettingsManager(this)
@@ -405,28 +411,30 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                             stringResource(R.string.actPage_permission_fn_c),
                             style = MaterialTheme.typography.bodyMedium
                         )
-                        Row(
+                        LazyRow(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
                         ) {
-                            Button(
-                                onClick = {
-                                    openUrl(context = context, url = "https://xksyu.online")
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.error,
-                                )
-                            ) {
-                                Text(stringResource(R.string.actPage_textB))
-                            }
-                            Spacer(modifier = Modifier.padding(horizontal = 5.dp))
-                            OutlinedButton(onClick = {
-                                val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                                intentB.data = "package:${context.packageName}".toUri()
-                                context.startActivity(intentB)
-                            }) {
-                                Text(stringResource(R.string.actPage_grant))
+                            item{
+                                Button(
+                                    onClick = {
+                                        openUrl(context = context, url = "https://xksyu.online")
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                                        contentColor = MaterialTheme.colorScheme.error,
+                                    )
+                                ) {
+                                    Text(stringResource(R.string.actPage_textB))
+                                }
+                                Spacer(modifier = Modifier.padding(horizontal = 5.dp))
+                                OutlinedButton(onClick = {
+                                    val intentB = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                                    intentB.data = "package:${context.packageName}".toUri()
+                                    context.startActivity(intentB)
+                                }) {
+                                    Text(stringResource(R.string.actPage_grant))
+                                }
                             }
                         }
                     }

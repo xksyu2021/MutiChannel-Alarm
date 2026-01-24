@@ -1,6 +1,8 @@
 package org.xksyu.mca.page
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,19 +38,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.xksyu.mca.MainActivity
 import org.xksyu.mca.R
+import org.xksyu.mca.data.prefer.LocaleHelper
 import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
 
 class SettingActivity : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
+    override fun attachBaseContext(context: Context) {
+        val tempManager = SettingsManager(context)
+        super.attachBaseContext(LocaleHelper.wrap(context, tempManager.getLang()))
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         settingsManager = SettingsManager(this)
         setContent {
             ContrastAwareReplyTheme{
-                SettingPage(onBack = { finish() }, context = this,settingsManager = settingsManager)
+                SettingPage(onBack = { finish() }, context = this,settingsManager = settingsManager){finish()}
             }
         }
     }
@@ -57,7 +64,7 @@ class SettingActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingPage(onBack: () -> Unit = {},context: Context? = null,settingsManager: SettingsManager){
+fun SettingPage(onBack: () -> Unit = {},context: Context,settingsManager: SettingsManager,onFinish: () -> Unit = {}){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -90,7 +97,7 @@ fun SettingPage(onBack: () -> Unit = {},context: Context? = null,settingsManager
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Language(settingsManager)
+            Language(settingsManager,context,onFinish)
             HorizontalDivider(
                 thickness = 2.dp,
                 modifier = Modifier
@@ -176,7 +183,7 @@ fun Debug(settingsManager: SettingsManager){
 
 
 @Composable
-fun Language(settingsManager: SettingsManager){
+fun Language(settingsManager: SettingsManager,context: Context,onFinish: () -> Unit = {}){
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -222,21 +229,40 @@ fun Language(settingsManager: SettingsManager){
                         text = { Text(stringResource(R.string.settingPage_lang_auto)) },
                         onClick = {
                             settingsManager.saveLang(SettingsManager.LANG_AUTO)
-                            showMenu = false
+
+                            val intent = Intent(context, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            context.startActivity(intent)
+                            if (context is Activity) {
+                                context.finish()
+                                context.overridePendingTransition(0, 0)
+                            }
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.settingPage_lang_zh)) },
                         onClick = {
                             settingsManager.saveLang(SettingsManager.LANG_ZH)
-                            showMenu = false
+                            val intent = Intent(context, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            context.startActivity(intent)
+                            if (context is Activity) {
+                                context.finish()
+                                context.overridePendingTransition(0, 0)
+                            }
                         }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.settingPage_lang_en)) },
                         onClick = {
                             settingsManager.saveLang(SettingsManager.LANG_EN)
-                            showMenu = false
+                            val intent = Intent(context, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            context.startActivity(intent)
+                            if (context is Activity) {
+                                context.finish()
+                                context.overridePendingTransition(0, 0)
+                            }
                         }
                     )
                 }
