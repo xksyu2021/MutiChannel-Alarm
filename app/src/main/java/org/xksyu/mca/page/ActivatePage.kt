@@ -81,11 +81,11 @@ class ActivateActivity : ComponentActivity() {
                 when(page.step.value) {
                     0 -> ActivatePageA(
                         onBackA = {
-                            settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
+                            settingsManager.debugSet(SettingsManager.DEBUG_OFF)
                             finish()
                         },
                         onBackB = {
-                            settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
+                            settingsManager.debugSet(SettingsManager.DEBUG_OFF)
                             page.step.value = 1
                         },
                         context = this, activity = this, settingsManager = settingsManager, intent = intent, per = per)
@@ -105,12 +105,10 @@ class ActivateActivity : ComponentActivity() {
                     2 -> {ActivatePageShizuku(
                         onBackA = {
                             page.step.value = 1
-                            settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
                         },
                         onBackB = {
                             settingsManager.notFirst()
                             settingsManager.waySet(SettingsManager.WAY_SHIZUKU)
-                            settingsManager.debugSet(SettingsManager.DEBUG_GRANT)
                             finish()
                             val intent = Intent(this, MainActivity::class.java)
                             this.startActivity(intent)
