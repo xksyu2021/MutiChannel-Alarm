@@ -37,12 +37,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -53,16 +55,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.xksyu.mca.R
 import org.xksyu.mca.data.base.AlarmViewModel
 import org.xksyu.mca.data.prefer.SettingsManager
 import org.xksyu.mca.feature.basic.cancelAlarm
 import org.xksyu.mca.feature.basic.setAlarm
+import org.xksyu.mca.feature.ring.RingBasic
 
 //the main page index.
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainPage(settingsManager : SettingsManager, alarmViewModel: AlarmViewModel, context :Context? = null) {
+fun MainPage(settingsManager : SettingsManager, alarmViewModel: AlarmViewModel, context :Context) {
     var showPage by remember { mutableIntStateOf(0) } //1 for debug. set it as 0 in release.
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -86,7 +92,7 @@ fun MainPage(settingsManager : SettingsManager, alarmViewModel: AlarmViewModel, 
                     onClick = {
                         val intent = Intent(context, AddActivity::class.java)
                         intent.putExtra("IS_EDIT", false)
-                        context?.startActivity(intent)
+                        context.startActivity(intent)
                     },
                     containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                     contentColor = MaterialTheme.colorScheme.tertiary,
@@ -125,7 +131,7 @@ fun MainPage(settingsManager : SettingsManager, alarmViewModel: AlarmViewModel, 
                 .fillMaxSize()
         ) {
             when(showPage){
-                1 -> ChannelPage(settingsManager = settingsManager)
+                1 -> ChannelPage(settingsManager = settingsManager,context = context)
                 else -> AlarmPage(alarmViewModel = alarmViewModel,context = context,settingsManager)
             }
         }
@@ -310,8 +316,20 @@ fun AlarmPage(alarmViewModel: AlarmViewModel, context: Context? = null,settingsM
 
 //channelPage
 @Composable
-fun ChannelPage(settingsManager : SettingsManager){
+fun ChannelPage(settingsManager : SettingsManager,context: Context){
     val scrollState = rememberScrollState()
+    var isDevDebug by remember { mutableStateOf(settingsManager.isDevDebug()) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                isDevDebug = settingsManager.isDevDebug()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
     Column(
         modifier = Modifier
             .verticalScroll(scrollState)
@@ -319,15 +337,33 @@ fun ChannelPage(settingsManager : SettingsManager){
             .padding(32.dp)
     )
     {
+        if(isDevDebug){
+            Row{
+                val ring = RingBasic(context,settingsManager)
+                OutlinedButton(
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    onClick = {
+                        ring.play()
+                    }
+                ) { Text("RING TEST") }
+                Spacer(Modifier.padding(horizontal = 8.dp))
+                OutlinedButton(
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    onClick = {
+                        ring.stop()
+                    }
+                ) { Text("RING STOP") }
+            }
+        }
         var currentMode by remember { mutableIntStateOf(settingsManager.getChanMode()) }
         var vibrationEnabled by remember { mutableStateOf(settingsManager.getChanVib()) }
 
         //current
         val selectText = when(settingsManager.getChanMode()){
-            1 -> stringResource(R.string.page2_modeTitle_pm)
-            2 -> stringResource(R.string.page2_modeTitle_head)
-            3 -> stringResource(R.string.page2_modeTitle_sys)
-            4 -> stringResource(R.string.page2_modeTitle_sm)
+            SettingsManager.CHAN_PRIOR -> stringResource(R.string.page2_modeTitle_pm)
+            SettingsManager.CHAN_HP_ONLY -> stringResource(R.string.page2_modeTitle_head)
+            SettingsManager.CHAN_SYSTEM -> stringResource(R.string.page2_modeTitle_sys)
+            SettingsManager.CHAN_SILENT -> stringResource(R.string.page2_modeTitle_sm)
             else -> "Null"
         }
         Text(stringResource(R.string.page2_modeTitle_current, selectText))
@@ -355,11 +391,11 @@ fun ChannelPage(settingsManager : SettingsManager){
 
         //1
         Card(
-            colors = updateChannelColor(1,currentMode),
+            colors = updateChannelColor(SettingsManager.CHAN_PRIOR,currentMode),
             onClick = {
-                currentMode = 1
-                settingsManager.saveChanMode(1)
-                updateChannelSelect(1)
+                currentMode = SettingsManager.CHAN_PRIOR
+                settingsManager.saveChanMode(SettingsManager.CHAN_PRIOR)
+                updateChannelSelect(SettingsManager.CHAN_PRIOR)
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)
@@ -385,11 +421,11 @@ fun ChannelPage(settingsManager : SettingsManager){
 
         //2
         Card(
-            colors = updateChannelColor(2,currentMode),
+            colors = updateChannelColor(SettingsManager.CHAN_HP_ONLY,currentMode),
             onClick = {
-                currentMode = 2
-                settingsManager.saveChanMode(2)
-                updateChannelSelect(2)
+                currentMode = SettingsManager.CHAN_HP_ONLY
+                settingsManager.saveChanMode(SettingsManager.CHAN_HP_ONLY)
+                updateChannelSelect(SettingsManager.CHAN_HP_ONLY)
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)
@@ -415,11 +451,11 @@ fun ChannelPage(settingsManager : SettingsManager){
 
         //3
         Card(
-            colors = updateChannelColor(3,currentMode),
+            colors = updateChannelColor(SettingsManager.CHAN_SYSTEM,currentMode),
             onClick = {
-                currentMode = 3
-                settingsManager.saveChanMode(3)
-                updateChannelSelect(3)
+                currentMode = SettingsManager.CHAN_SYSTEM
+                settingsManager.saveChanMode(SettingsManager.CHAN_SYSTEM)
+                updateChannelSelect(SettingsManager.CHAN_SYSTEM)
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)
@@ -445,11 +481,11 @@ fun ChannelPage(settingsManager : SettingsManager){
 
         //4
         Card(
-            colors = updateChannelColor(4,currentMode),
+            colors = updateChannelColor(SettingsManager.CHAN_SILENT,currentMode),
             onClick = {
-                currentMode = 4
-                settingsManager.saveChanMode(4)
-                updateChannelSelect(4)
+                currentMode = SettingsManager.CHAN_SILENT
+                settingsManager.saveChanMode(SettingsManager.CHAN_SILENT)
+                updateChannelSelect(SettingsManager.CHAN_SILENT)
             },
             modifier = Modifier
                 .fillMaxWidth(0.95f)

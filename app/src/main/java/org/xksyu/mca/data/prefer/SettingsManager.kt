@@ -24,6 +24,10 @@ class SettingsManager(context: Context?) {
         const val DEBUG_GRANT = -2
         const val DEBUG_NOW = 2
         const val DEBUG_VIEW = 3
+        const val CHAN_PRIOR = 1
+        const val CHAN_HP_ONLY = 2
+        const val CHAN_SYSTEM = 3
+        const val CHAN_SILENT = 4
     }
 
     private val sharedPref: SharedPreferences? =
@@ -78,5 +82,11 @@ class SettingsManager(context: Context?) {
     fun debugGet(): Int{
         val debug = sharedPref?.getInt(DEBUG, DEBUG_OFF) ?: DEBUG_OFF
         return debug
+    }
+    fun isDevDebug() : Boolean{
+        return when (debugGet()) {
+            DEBUG_OFF, DEBUG_GRANT -> false
+            else -> true
+        }
     }
 }

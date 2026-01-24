@@ -118,16 +118,17 @@ fun Debug(settingsManager: SettingsManager){
         ) {
             Text(stringResource(R.string.settingPage_debug))
         }
-        var debug by remember { mutableStateOf(settingsManager.debugGet()) }
+        var debug by remember { mutableStateOf("Undefined") }
         Row(
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val debug = when(settingsManager.getLang()) {
+            debug = when(settingsManager.debugGet()) {
                 SettingsManager.DEBUG_GRANT -> "DEBUG_GRANT"
                 SettingsManager.DEBUG_NOW -> "DEBUG_NOW"
                 SettingsManager.DEBUG_VIEW -> "DEBUG_VIEW"
-                else -> "DEBUG_OFF"
+                SettingsManager.DEBUG_OFF -> "DEBUG_OFF"
+                else -> "Undefined"
             }
 
             Text(debug)
@@ -149,21 +150,21 @@ fun Debug(settingsManager: SettingsManager){
                     DropdownMenuItem(
                         text = { Text("DEBUG_OFF") },
                         onClick = {
-                            settingsManager.saveLang(SettingsManager.DEBUG_OFF)
+                            settingsManager.debugSet(SettingsManager.DEBUG_OFF)
                             showMenu = false
                         }
                     )
                     DropdownMenuItem(
                         text = { Text("DEBUG_NOW") },
                         onClick = {
-                            settingsManager.saveLang(SettingsManager.DEBUG_NOW)
+                            settingsManager.debugSet(SettingsManager.DEBUG_NOW)
                             showMenu = false
                         }
                     )
                     DropdownMenuItem(
                         text = { Text("DEBUG_VIEW") },
                         onClick = {
-                            settingsManager.saveLang(SettingsManager.DEBUG_VIEW)
+                            settingsManager.debugSet(SettingsManager.DEBUG_VIEW)
                             showMenu = false
                         }
                     )

@@ -8,13 +8,15 @@ import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
 import org.xksyu.mca.data.prefer.SettingsManager
+import org.xksyu.mca.feature.ring.RingBasic
 
 class Reminder(private val context: Context, private val settingsManager: SettingsManager,private val id: Int) {
     private val vibrator =  context.getSystemService(Vibrator::class.java)
     private val powerManager = context.getSystemService(POWER_SERVICE) as PowerManager
     private val wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MCA:WakeLockTag")
     private val handler = Handler(Looper.getMainLooper())
-    private var idleRunnable: Runnable? = null
+    private var idleRunnable: Runnable = Runnable { }
+    private val ring = RingBasic(context,settingsManager)
 
     private fun vibStart(){
         if (settingsManager.getChanVib() && settingsManager.debugGet() != SettingsManager.DEBUG_GRANT
@@ -29,15 +31,19 @@ class Reminder(private val context: Context, private val settingsManager: Settin
 
 
     fun idleAction(action: () -> Unit = {}) {
-        idleRunnable =  Runnable{ action() }
+        idleRunnable =  Runnable{
+            action()
+        }
     }
     fun start(){
-        handler.postDelayed(idleRunnable!!, 60 * 1000L)
+        handler.postDelayed(idleRunnable, 60 * 1000L)
         vibStart()
         wakelockStart()
+        ring.play()
     }
     fun stop(){
-        idleRunnable?.let { handler.removeCallbacks(it) }
+        idleRunnable.let { handler.removeCallbacks(it) }
+        ring.stop()
         vibrator.cancel()
         AlarmForegroundService.stopNotification(context,id)
         AlarmForegroundService.stopService(context)

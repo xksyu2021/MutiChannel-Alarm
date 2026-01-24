@@ -13,9 +13,9 @@
     <string name="page2_modeTitle_head">Headphones-only Output</string>
     <string name="page2_modeTitle_sys">System-selected</string>
     <string name="page2_modeTitle_current">Current: %1$s</string>
-    <string name="page2_modeDescribe_pm">When headphones are connected, the ringtone will only be played through the headphones. \nIf the headphones are disconnected, it will be played through the speaker.</string>
-    <string name="page2_modeDescribe_head">The ringtone is played exclusively through the headphones. If the headphones are disconnected, no ringtone will be played.</string>
-    <string name="page2_modeDescribe_sys">The way to play the ringtone is decided by your phone system.In most cases,it means speaker-only output.</string>
+    <string name="page2_modeDescribe_pm">Please adjust the volume using the media volume bar.\nWhen headphones are connected, the ringtone will only be played through the headphones. \nIf the headphones are disconnected, it will be played through the speaker.</string>
+    <string name="page2_modeDescribe_head">Please adjust the volume using the media volume bar.\nThe ringtone is played exclusively through the headphones. If the headphones are disconnected, no ringtone will be played.</string>
+    <string name="page2_modeDescribe_sys">Please adjust the volume level using the alarm volume bar.\nThe way to play the ringtone is decided by your phone system.In most cases,it means speaker-only output.</string>
     <string name="pageAbout_by" translatable="false">by wxp (xksyu2021)</string>
     <string name="backHead">Back</string>
     <string name="pageAbout_link_code">Code</string>

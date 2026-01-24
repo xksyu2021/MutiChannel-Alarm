@@ -321,9 +321,16 @@ fun AddConfigList(temp : AlarmTemp, isEdit : Boolean, alarmById: AlarmData?){
                 .padding(vertical = 15.dp)
         ){
             val currentTime = Calendar.getInstance()
-            val defHour = if(isEdit) temp.hour.value else currentTime.get(Calendar.HOUR_OF_DAY)
-            val defMinute = if(isEdit) temp.minute.value else currentTime.get(Calendar.MINUTE)+1
-
+            var defHour = if(isEdit) temp.hour.value else currentTime.get(Calendar.HOUR_OF_DAY)
+            val defMinute =
+                if (isEdit) {
+                    temp.minute.value
+                } else if (Calendar.MINUTE == 59) {
+                    defHour += 1
+                    0
+                } else {
+                    currentTime.get(Calendar.MINUTE) + 1
+                }
             val timePickerState = rememberTimePickerState(
                 initialHour = defHour,
                 initialMinute = defMinute,

@@ -40,9 +40,9 @@
     <string name="pageAdd_delCheck_title">删除该闹钟</string>
     <string name="title_edit">编辑</string>
     <string name="pageAdd_check_edit">如果您点击“退出”，所有改动不会被记录。</string>
-    <string name="page2_modeDescribe_pm">若存在耳机连接，将仅通过耳机播放铃声。若耳机断连将通过扬声器外放。</string>
-    <string name="page2_modeDescribe_head">仅通过耳机播放闹钟铃声，耳机断连则静音通知。</string>
-    <string name="page2_modeDescribe_sys">由系统决定振铃的音频通道。大多数情况下，这代表外放铃声。</string>
+    <string name="page2_modeDescribe_pm">请使用媒体音量条调节音量大小。若存在耳机连接，将仅通过耳机播放铃声。若耳机断连将通过扬声器外放。</string>
+    <string name="page2_modeDescribe_head">请使用媒体音量条调节音量大小。\n仅通过耳机播放闹钟铃声，耳机断连则静音通知。</string>
+    <string name="page2_modeDescribe_sys">请使用闹铃音量条调节音量大小。\n由系统决定振铃的音频通道。大多数情况下，这代表外放铃声。</string>
     <string name="title_SettingPage">设置</string>
     <string name="settingPage_lang_auto">自动</string>
     <string name="settingPage_lang">语言</string>

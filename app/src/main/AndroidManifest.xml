@@ -81,4 +81,8 @@
 
 
     </application>
+
+    <attribution android:tag="alarm"
+        android:label="@string/app_name">
+    </attribution>
 </manifest>

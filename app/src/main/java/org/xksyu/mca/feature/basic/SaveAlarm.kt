@@ -258,5 +258,6 @@ fun repeatFun(repeatMode: Int,context: Context,alarmViewModel: AlarmViewModel,se
     }
     alarmViewModel.alarmById.value?.let {
         if(it.isRepeat) alarmViewModel.delete(it)
+        else if(it.autoWeek == AlarmData.AUTO_ONCE) it.isOpen=false
     }
 }
