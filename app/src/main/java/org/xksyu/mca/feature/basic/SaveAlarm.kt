@@ -126,7 +126,11 @@ fun setAlarm(alarm: AlarmData, context: Context,settingsManager: SettingsManager
     println("  Hour: ${time.get(Calendar.HOUR_OF_DAY)}, Minute: ${time.get(Calendar.MINUTE)}, Second: ${time.get(Calendar.SECOND)}")
 
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,time.timeInMillis,alarmPendingIntent)
+
+    //alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,time.timeInMillis,alarmPendingIntent)
+
+    val alarmClockInfo = AlarmManager.AlarmClockInfo(time.timeInMillis, alarmPendingIntent)
+    alarmManager.setAlarmClock(alarmClockInfo, alarmPendingIntent)
 }
 
 fun cancelAlarm(alarm: AlarmData, context: Context){
