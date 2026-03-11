@@ -106,4 +106,6 @@
     <string name="settingPage_debug" translatable="false">DebugMode</string>
     <string name="debug_grantFailed">In other cases, authorization failed. Please try again.</string>
     <string name="debug_grantSuccess">Finish</string>
+    <string name="actPage_permission_db_t">Dismiss Battery Opt</string>
+    <string name="actPage_permission_db_c">Make system unable to stop the alarm for battery opt.</string>
 </resources>

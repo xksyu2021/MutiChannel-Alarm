@@ -99,4 +99,6 @@
     <string name="debug_grant">如果此页面在锁屏后直接，或者你在刚刚弹出的系统对话框内点击了授权，点此按钮继续。</string>
     <string name="debug_grantFailed">其他情况下，授权失败，请重试。</string>
     <string name="debug_grantSuccess">完成</string>
+    <string name="actPage_permission_db_t">忽略电池优化</string>
+    <string name="actPage_permission_db_c">使得系统不会因电池优化而关闭闹钟。</string>
 </resources>

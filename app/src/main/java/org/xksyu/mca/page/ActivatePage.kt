@@ -362,6 +362,53 @@ fun ActivatePageA (onBackA: () -> Unit = {}, onBackB: () -> Unit = {},context: C
                 }
             }
         }
+        HorizontalDivider(
+            thickness = 2.dp,
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(vertical = 15.dp)
+        )
+
+        Column(
+            modifier = Modifier
+                .wrapContentHeight()
+                .padding(16.dp)
+                .fillMaxWidth(0.95f)
+        ) {
+            Text(
+                stringResource(R.string.actPage_permission_db_t),
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                stringResource(R.string.actPage_permission_db_c),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                if(!per.batteryOpt.value) {
+                    Button(onClick = {
+                        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                            data = "package:${context.packageName}".toUri()
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        context.startActivity(intent)
+                    }) {
+                        Text(stringResource(R.string.actPage_grant))
+                    }
+                }else{
+                    Button(onClick = {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                        )
+                    ) {
+                        Text(stringResource(R.string.actPage_ok))
+                    }
+                }
+            }
+        }
 
         HorizontalDivider(
             thickness = 2.dp,
