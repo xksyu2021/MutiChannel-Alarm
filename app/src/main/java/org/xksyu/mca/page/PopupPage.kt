@@ -45,6 +45,9 @@ import org.xksyu.mca.feature.basic.repeatFun
 import org.xksyu.mca.feature.basic.setAlarm
 import org.xksyu.mca.ui.theme.ContrastAwareReplyTheme
 
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
+
 class AlarmGet : ComponentActivity() {
     private lateinit var settingsManager: SettingsManager
     override fun attachBaseContext(context: Context) {
@@ -54,6 +57,12 @@ class AlarmGet : ComponentActivity() {
     @SuppressLint("ServiceCast")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        val controller = WindowCompat.getInsetsController(window, window.decorView)
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller.hide(androidx.core.view.WindowInsetsCompat.Type.systemBars())
 
         window.addFlags(
             //WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
